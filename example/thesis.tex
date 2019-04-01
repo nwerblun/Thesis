@@ -1,0 +1,105 @@
+%% thesis.tex 2014/04/11
+%
+% Based on sample files of unknown authorship.
+%
+% The Current Maintainer of this work is Paul Vojta.
+
+\documentclass[masters]{ucbthesis}
+\usepackage{biblatex}
+\usepackage{graphicx}
+\graphicspath{{./figs/}}
+\usepackage{circuitikz}
+% To compile this file, run "latex thesis", then "biber thesis"
+% (or "bibtex thesis", if the output from latex asks for that instead),
+% and then "latex thesis" (without the quotes in each case).
+
+% Double spacing, if you want it.  Do not use for the final copy.
+% \def\dsp{\def\baselinestretch{2.0}\large\normalsize}
+% \dsp
+
+% If the Grad. Division insists that the first paragraph of a section
+% be indented (like the others), then include this line:
+% \usepackage{indentfirst}
+
+\newtheorem{theorem}{Jibberish}
+
+\bibliography{references}
+
+\hyphenation{mar-gin-al-ia}
+\hyphenation{bra-va-do}
+
+\begin{document}
+
+% Declarations for Front Matter
+
+\title{Closing the Analog Design Loop with BAG}
+\author{Nicholas Werblun}
+\degreesemester{Spring}
+\degreeyear{2019}
+\degree{Master of Science}
+\chair{Professor Vladimir Stojanovi\'c}
+\othermembers{Professor Borivoje Nikolic}
+\numberofmembers{1}
+\field{Electrical Engineering and Computer Sciences}
+% Designated Emphasis -- this is optional, and rare
+% \emphasis{Colloidal Telemetry}
+% This is optional, and rare
+% \jointinstitution{University of Western Maryland}
+% This is optional
+\campus{Berkeley}
+
+% For a masters thesis, replace the above \documentclass line with
+% \documentclass[masters]{ucbthesis}
+% This affects the title and approval pages, which by default calls this
+% document a "dissertation", not a "thesis".
+
+\maketitle
+% Delete (or comment out) the \approvalpage line for the final version.
+% \approvalpage
+\copyrightpage
+\include{signature_sheet}
+\include{abstract}
+
+\begin{frontmatter}
+
+%\begin{dedication}
+%\null\vfil
+%\begin{center}
+%To my friends and family\\\vspace{12pt}
+%Thank you for being there when I needed it. You know who you are.
+%\end{center}
+%\vfil\null
+%\end{dedication}
+
+% You can delete the \clearpage lines if you don't want these to start on
+% separate pages.
+
+\tableofcontents
+\clearpage
+\listoffigures
+\clearpage
+\listoftables
+
+\begin{acknowledgements}
+Thank you to professor Vladimir Stojanovi\'c for the advising and guidance through this project. Starting is often the hardest part, as is finding a direction to follow. Huge thank you to Sidney Buchbinder and Ruocheng Wang for mentoring me through my degree. Thank you for answering my multi-hundreds of questions and teaching me roughly one semester's worth of information in just a few weeks total.  I asked for design experience and I got it; and you helped me through it.
+
+Additional thanks to all of team Vlada, Panos, Christos, Olivia, Pavan, Nandish, Taewhan and Eric for making my research experience bearable. Finally, thank you to Eric Chiang [CHECK SPELLING] for creating BAG so that I never had to do layout by hand.
+
+\end{acknowledgements}
+
+\end{frontmatter}
+\pagestyle{headings}
+
+% (Optional) \part{First Part}
+
+\include{chap1}
+\include{chap2}
+\include{chap3}
+\include{chap4}
+\include{chap5}
+% \appendix
+% \chapter{More Monticello Candidates}
+
+\printbibliography
+
+\end{document}

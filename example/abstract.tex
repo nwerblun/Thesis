@@ -1,0 +1,16 @@
+% (This file is included by thesis.tex; you do not latex it by itself.)
+
+\begin{abstract}
+
+% The text of the abstract goes here.  If you need to use a \section
+% command you will need to use \section*, \subsection*, etc. so that
+% you don't get any numbering.  You probably won't be using any of
+% these commands in the abstract anyway.
+
+Analog and mixed signal IC design is notoriously difficult and slow due in large part to the layout. Modern integrated circuit fabrication with such small devices can have significant parasitics that can drastically affect the behavior of a circuit's design [CITATION HERE]. The implication is that simulations of circuit's behavior are unreliable until after the layout parasitics are extracted and included in the simulation. 
+
+The Berkeley Analog Generator (BAG) is a Python-based tool that interfaces with the Cadence Virtuoso software [CITATION HERE] that aims to solve the above problem. BAG interfaces with Virtuoso to allow the user to write parametrizable generator scripts that will automatically generate the entire layout and schematic, as well as run the layout-versus-schematic (LVS) and post-layout extraction (PEX) and export the results in a time that ranges from seconds to minutes. Designers who have decided on a certain topology can write a layout and schematic generator script in a high level programming language with class based heirarchy once, and then any changes in the circuit simply require changing the corresponding parameters file containing the circuit specifications. Additionally, BAG allows the automation of simulation and post-processing of simulation data.
+
+This report shows examples of many common circuit blocks and their BAG implementation, as well as an example of how BAG can be used to speed up the design process. In roughly two weeks, an LVS/PEX verified design for a 25GPbs optical communication link reciever in a 14nm FinFET technology was created using BAG cells and testbenches. Further possibilities and uses of BAG are also discussed.
+
+\end{abstract}
