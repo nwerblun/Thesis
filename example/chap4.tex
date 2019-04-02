@@ -321,6 +321,39 @@ The comparator is implemented as a double tail sense amplifier.
 \draw (in_left.gate) node[label={[font=\footnotesize]180:$V_{in}$}] {};
 \draw (in_right.gate) node[label={[font=\footnotesize]0:$V_{ip}$}] {};
 \draw (in_left.source) to[short, -*] (tail_left.drain) to[short] (tail_right.drain) to[short, *-] (in_right.source);
+\draw (0, 4) node[pmos, xscale=-1](left_reset){};
+\draw (2, 4) node[pmos](right_reset){};
+\draw (right_reset.gate) node[label={[font=\footnotesize]90:$CLK$}] {};
+\draw (left_reset.gate) to[short] (right_reset.gate);
+\draw (left_reset.drain) to[short, l=$D_{ip}$, -*] (in_left.drain);
+\draw (right_reset.drain) to[short, l_=$D_{in}$, -*] (in_right.drain);
+\draw (left_reset.source) to[short, l=$V_{DD}$] (right_reset.source);
+\draw (-3, 8) node[nmos](left_switch){};
+\draw (-1, 8) node[nmos, xscale=-1](inv_left_n){};
+\draw (3, 8) node[nmos](inv_right_n){};
+\draw (5, 8) node[nmos, xscale=-1](right_switch){}; 
+\draw (-1, 10) node[pmos, xscale=-1](inv_left_p){};
+\draw (-1, 12) node[pmos](p_switch_left){};
+\draw (3, 10) node[pmos](inv_right_p){};
+\draw (3, 12) node[pmos, xscale=-1](p_switch_right){};
+\draw (in_left.drain) to[short] (-4, 2.77) to[short] (left_switch.gate);
+\draw (in_right.drain) to[short] (6, 2.77) to[short] (right_switch.gate);
+\draw (left_switch.source) to[short, -*] (inv_left_n.source) to[short, -*] (1, 7.25) to[short, -*] (inv_right_n.source) to[short] (right_switch.source);
+\draw (1, 7.25) node[ground]{};
+\draw (left_switch.drain) to[short, l=$V_{on}$] (inv_left_n.drain);
+\draw (right_switch.drain) to[short, l_=$V_{op}$] (inv_right_n.drain);
+\draw (inv_left_n.drain) to[short] (inv_left_p.drain);
+\draw (inv_right_n.drain) to[short] (inv_right_p.drain);
+\draw (inv_left_p.gate) to[short] (inv_left_n.gate);
+\draw (inv_right_p.gate) to[short] (inv_right_n.gate);
+\draw (inv_left_n.drain) to[short, *-*] (2.025, 8.77);
+\draw (inv_right_p.drain) to[short, *-*] (-0.025, 9.225);
+\draw (inv_left_p.source) to[short] (p_switch_left.drain);
+\draw (inv_right_p.source) to[short] (p_switch_right.drain);
+\draw (p_switch_left.source) to[short, l=$V_{DD}$] (p_switch_right.source);
+\draw (p_switch_left.drain) to[short, *-*] (p_switch_right.drain);
+\draw (p_switch_left.gate) node[label={[font=\footnotesize]180:$\overline{CLK}$}] {};
+\draw (p_switch_right.gate) node[label={[font=\footnotesize]0:$\overline{CLK}$}] {};
 \end{circuitikz}
 \label{Preamp Schematic}
 \caption{Preamp Schematic}
