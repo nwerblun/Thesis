@@ -15,12 +15,13 @@ Photonic communication systems transmit and recieve data using light, meaning th
 \item Must use BAG for generation and the majority of testing
 \end{itemize}
 
-There are no power constraints or architecture constraints with the condition that any chosen architecture will be implemented in BAG. We will assume the photonoics are already implemented, and we will also not simulate for temperature, voltage or process variations. Noise in general should be low, but there is no strict value requirement. We will see in the ``Future Discussions'' [CHANGE THIS TO APPROPRIATE TITLE] of Chapter 5 [GET PROPER CHAPTER] how this could be extended, and an example of how one could generalize the design procedure automatically.
+There are no power constraints or architecture constraints with the condition that any chosen architecture will be implemented in BAG. We will assume the photonoics are already implemented, and we will also not simulate for temperature, voltage or process variations. Each transistor will be of a unit size, and only the number of fingers will change. Noise in general should be low, but there is no strict value requirement. We will see in the ``Future Discussions'' [CHANGE THIS TO APPROPRIATE TITLE] of Chapter 5 [GET PROPER CHAPTER] how this could be extended, and an example of how one could generalize the design procedure automatically.
 
 \subsection{Architecture Choice and Concerns}
 The architecture is based off the reciever in [CITATION HERE, KRISHNA] and is shown below:
 \begin{figure}[h]
-\includegraphics[width=\textwidth]{architecture}
+\centering
+\includegraphics[width=0.7\textwidth]{architecture}
 \caption{System architecture}
 \label{fig:System Architecture}
 \end{figure}
@@ -45,7 +46,8 @@ F_{total}=F_1+\frac{F_2-1}{G_1}+\frac{F_3-1}{G_1G_2}+...
 The TIA is followed by a continuous time linear equalizer (CTLE). A CTLE has a zero in its transfer function that can be placed at a specific frequency, which theoretically allows the designer to extend the bandwidth of previous stages. One concern of the CTLE however, is that it can only, in general, shape the energy of the frequency spectrum. This means that usually to increase the gain at high frequency, we must throw away DC gain, as shown below:
 
 \begin{figure}[h]
-\includegraphics[width=\textwidth]{ctle_operation}
+\centering
+\includegraphics[width=0.8\textwidth]{ctle_operation}
 \caption{CTLE effect on a generic one-pole system}
 \label{fig:CTLE Operation}
 \end{figure}
@@ -104,16 +106,61 @@ The TIA is implemented as a pseudo-differential structure as two CMOS inverters 
 \end{figure}
 
 [CITATION HERE] about Nandish's paper with pseudo diff performance and why it was better for common mode or something.
-TALK ABOUT BLEEDERS AND HOW THEY SET THE DC COMMON MODE AT THE OUTPUT.
+At DC, if $I_{DC}=0$ then the input and output common mode voltages are equal. The purpose of the DC current source is to force the output common mode to be higher if desired. Since the output will sit about mid-rail, that may not be enough to bias the input of the CTLE, so we will need DC current through $R_{fb}$ to force this difference.
 
-From the small signal model (shown below) we can derive the gain and pole locations.
+If we assume the inverters are an amplifier with gain $-A_v$ then the input impedance can be found by using Miller's theorem. 
+\begin{equation}
+\label{TIA input impedance}
+Z_{in}=Z_{C_{pd}}||(1+A_v)R_{fb}
+\end{equation}
+which simplifies to 
+\begin{equation}
+\label{TIA input impedance}
+\frac{(1+A_v)R_{fb}}{1+j\omega (1+A_v)C_{pd}R_{fb}}
+\end{equation}
+Thus the input pole should be roughly at
+\begin{equation}
+\label{TIA input pole}
+\omega_p=\frac{1}{(1+A_v)R_{fb}C_{pd}}
+\end{equation}
+From the small signal model of one half of the circuit (shown below) we can derive the gain.
+
 \begin{center}
-SMALl SIGNAL MODEL + DERIVATION HERE
+\begin{figure}[h]
+\centering
+\ctikzset{tripoles/mos style/arrows}
+\begin{circuitikz}[american voltages]
+\draw (0, 0) to[american current source, v=$v_{gs}$, l=$i_{in}$] (0, 2.5);
+\draw (0, 0) node[ground]{};
+\draw (0, 2.5) to[R, l=$R_{fb}$] (2, 2.5);
+\draw (2, 2.5) to[american controlled current source, l=$g_{mn} v_{gs}$] (2, 0);
+\draw (2, 2.5) to[short] (4.5, 2.5) to[american controlled current source, l=$g_{mp} v_{gs}$] (4.5, 0);
+\draw (4.5, 2.5) to[short] (7, 2.5) to[R, l=$r_{on}||r_{op}$] (7, 0);
+\draw (7, 2.5) to[short, -o] (8, 2.5) node[label={[font=\footnotesize]0:$v_{out}$}] {};
+\draw (7, 0) to[short] (0, 0);
+\end{circuitikz}
+\label{TIA Small Signal Model}
+\caption{TIA Small Signal Model}
+\end{figure}
 \end{center}
+KCL at the output node gives
+\begin{equation}
+\label{TIA gain KCL}
+\frac{v_{out}}{r_{on}||r_{op}}+(g_{mn}+g_{mp})(i_{in}R_{fb}+v_{out})-i_{in}=0
+\end{equation}
+which simplifies to
+\begin{equation}
+\label{TIA gain full}
+\frac{v_{out}}{i_{in}}=\frac{R_{fb}(g_{mn}+g_{mp})-1}{-(g_{mn}+g_{mp})-\frac{1}{r_{on}||r_{op}}}
+\end{equation}
+If we assume $R_{fb}$ and $r_{on}||r_{op}$ are both much larger than one, then the transfer function simplifies to
+\begin{equation}
+\label{TIA gain}
+|\frac{v_{out}}{i_{in}}|=R_{fb}
+\end{equation}
+The gain is then approximately just $R_{fb}$. For a given choice of $R_{fb}$, we then use BAGs rapid iteration to sweep for transistor widths. As the size increases, device parasitics become dominant over the external capacitances, so there is an optimal size for bandwidth. Once the maximum bandwidth is found, this sets the device sizes. Since we know the CTLE can only get a couple of GHz of bandwidth extension, we can calculate and then sweep the TIA resistor to see what resistance gives a bandwidth of around 12GHz. If we assume the CTLE will cut the DC gain by roughly a third, and we can get about 1.5x amplification from the preamps, then the overall gain should still be high enough for the comparator.
 
-The gain is then approximately just $R_{fb}$. For a given choice of $R_{fb}$, we then use BAGs rapid iteration to sweep for transistor widths. As the size increases, device parasitics become dominant over the external capacitances, so there is an optimal size for bandwidth. Once the maximum bandwidth is found, this sets the device sizes. Since we know the CTLE can only get a couple of GHz of bandwidth extension, we sweep the TIA resistor to see what resistance gives a bandwidth of around 12GHz. This results in a gain of [GAIN GOES HERE]. If we assume the CTLE will cut the DC gain by roughly a third, and we can get about 1.5x amplification from the preamps, then the overall gain should still be high enough for the comparator.
-
-The output common mode is set by the DC sources. Assuming $0A$ of DC current, the input common mode will be around mid-rail, so the output common mode can be approximated as follows:
+To set the output common mode, we can assume the input will be around mid-rail, so the output can be approximated as follows:
 \begin{equation}
 \label{tia_dc}
 \frac{V_{o}-\frac{V_{DD}}{2}}{R_{fb}}=I_{DC}
@@ -153,6 +200,7 @@ A CTLE is a simple amplifier, degenerated by a parallel resistor capacitor combi
 \end{figure}
 
 Since we know the pole location of the TIA, we can design the CTLE to have its zero in close proximity. Firstly, we draw the approximate differential mode half circuit:
+
 \begin{figure}[h]
 \centering
 \ctikzset{tripoles/mos style/arrows}
@@ -206,13 +254,80 @@ with the second pole at
 \end{equation}
 and lastly, the ideal peaking gain should be 
 \begin{equation}
+\label{peak gain}
 A_{peak}=g_mR_d
 \end{equation}
+From these equations, we can choose the values of the degeneration components and pullup resistors to place the zero and set the peak gain. We want the second pole to be far away at roughly 20GHz or more, which fixes $R_d$ for a given $C_l$. If we want a peak gain of around 2, that then fixes the required $g_m$, which for an assumed $V_{ov}$ of 200mV, fixes the bias current and transistor sizes. We will (quite conservatively) assume the input to each amplifier is 10fF, so the total load is 20fF. Through BAG, we can sweep component values near the desired points to get more accurate results.
 
 \section{Preamplifiers}
+The preamplifiers are implemented as passively-loaded differential amplifiers as shown below. The main purpose is to serve as a buffer between the CTLE and the DTSAs. The DTSAs will provide a fairly substatial capacitve load to the CTLE as well as back-inject their clock, which is undesired. The preamplifiers ideally will have a gain of around 2, but we will target a gain greater than 1. 
+
+\begin{figure}[h]
+\centering
+\ctikzset{tripoles/mos style/arrows}
+\begin{circuitikz}[american voltages]
+\draw (1, 1) node[nmos](n_in){};
+\draw (3, 1) node[nmos, xscale=-1](p_in){};
+\draw (n_in.drain) to[R, l=$R_d$] (1, 3.5);
+\draw (1, 3.5) to[short] (2, 3.5) node[above]{$V_{DD}$};
+\draw (2, 3.5) to[short] (3, 3.5) to[R, l=$R_d$] (p_in.drain);
+\draw (n_in.source) to[short] (1, 0) to[short, *-*] (3, 0) to[short] (p_in.source);
+\draw (1, -1) node[nmos](n_tail){};
+\draw (n_tail.drain) to[short] (1, 0);
+\draw (3, -1) node[nmos](p_tail){};
+\draw (p_tail.drain) to[short] (3, 0);
+\draw (n_tail.source) to[short] (1, -2) to[short, -*] (2, -2) node[ground]{};
+\draw (2, -2) to[short] (3, -2) to[short] (p_tail.source);
+\draw (-1, -1) node[nmos, xscale=-1](bias){};
+\draw (bias.source) to[short] (-1, -2) to[short] (2, -2);
+\draw (bias.drain) to[short, -o] (-1, 0.5) node[left]{$I_{bias}$};
+\draw (-1, 0) to[short, *-] (0, 0) to[short, -*] (bias.gate);
+\draw (bias.gate) to[short] (p_tail.gate);
+\draw (n_in.gate) node[label={[font=\footnotesize]180:$V_{in}$}] {};
+\draw (p_in.gate) node[label={[font=\footnotesize]0:$V_{ip}$}] {};
+\draw (p_in.drain) to[short, -o] (2.5, 1.77) to[open, v=$V_{out}$] (1.5, 1.77) to[short, o-] (n_in.drain);
+\end{circuitikz}
+\label{Preamp Schematic}
+\caption{Preamp Schematic}
+\end{figure}
+
+Assuming the $r_o$ of the transistors are fairly large, then the gain of this amplifier is known to be
+\begin{equation}
+\label{preamp gain}
+A_v=g_mR_d
+\end{equation}
+with the unity gain frequency at
+\begin{equation}
+\label{preamp ugb}
+\omega_u=\frac{g_m}{C_l}
+\end{equation}
+Once we know the bandwidth of the CTLE, we can determine the required unity gain bandwidth for an overall gain of 2 at this frequency. Again assuming each DTSA provides 10fF of load, then we know $C_l$. This fixes the required $g_m$ and therefore the device sizes and bias current.
+
 
 \section{Comparator}
-The comparator usually is the first thing one would design. The comparator's limitations generally sets the required gain and noise specs for the front end. In this project, the comparator was designed last, since there is no power constraint. This means that at the cost of power, we can generally make the comparator decide between very small voltages if we are willing to burn more current.
+The comparator is implemented as a double tail sense amplifier.
+
+\begin{figure}[h]
+\centering
+\ctikzset{tripoles/mos style/arrows}
+\begin{circuitikz}[american voltages]
+\draw (0, 0) node[nmos](tail_left){};
+\draw (2, 0) node[nmos, xscale=-1](tail_right){};
+\draw (tail_left.gate) node[label={[font=\footnotesize]180:$CLK$}] {};
+\draw (tail_right.gate) node[label={[font=\footnotesize]0:$CLK$}] {};
+\draw (tail_left.source) to[short] (0, -1) to[short, -*] (1, -1) node[ground]{} to[short] (2,-1) to[short] (tail_right.source);
+\draw (0, 2) node[nmos](in_left){};
+\draw (2, 2) node[nmos, xscale=-1](in_right){};
+\draw (in_left.gate) node[label={[font=\footnotesize]180:$V_{in}$}] {};
+\draw (in_right.gate) node[label={[font=\footnotesize]0:$V_{ip}$}] {};
+\draw (in_left.source) to[short, -*] (tail_left.drain) to[short] (tail_right.drain) to[short, *-] (in_right.source);
+\end{circuitikz}
+\label{Preamp Schematic}
+\caption{Preamp Schematic}
+\end{figure}
+
+
+The comparator usually is the first thing one would design, as its limitations generally set the required gain and noise specs for the front end. In this project, the comparator was designed last, since there is no power constraint. This means that at the cost of power, we can generally make the comparator decide between very small voltages if we are willing to burn more current.
 
 \begin{center}
 Show an equation or graph or something with the parasitic caps on the DIN/DIP nodes and how they have I+dI and I-dI going through them
