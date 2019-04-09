@@ -1,64 +1,44 @@
 \chapter{Conclusions, Future Work and Future Possibilies}
 
 \section{How BAG Saved the Day}
-TALK ABOUT HOW YOU WOULD INCLUDE PACKAGE PARASITICS 
-TALK ABOUT HOW SWEEPDESIGNMANAGER COULD ALLOW YOU TO WRITE DESIGN SCRIPTS THAT CAN SWEEP REAL PARAMETERS
-TALK ABOUT ERICS DESIGN SCRIPT
-TALK ABOUT KOUROSH'S ML STUFF
+A good question to ask is how BAG improved the process, if at all? The classic strategy would be to design with only some regard to layout parasitics, and simply hope the effect is not too great. Should the effects prove to be too substantial, modify the design and iterate until a solution is found. Does BAG fix this problem? The generators had to be written first which is clearly a non-trivial task. What time is even saved? What is the benefit over the old way? 
 
-\begin{figure}\centering
-\parbox{.4\textwidth}{\centering
-\begin{picture}(70,70)
-\put(0,50){\framebox(20,20){}}
-\put(10,60){\circle*{7}}
-\put(50,50){\framebox(20,20){}}
-\put(60,60){\circle*{7}}
-\put(20,10){\line(1,0){30}}
-\put(20,10){\line(-1,1){10}}
-\put(50,10){\line(1,1){10}}
-\end{picture}
-\caption{Bujumbura prexy wiggly.}}
-\hfill
-\parbox{.4\textwidth}{\centering
-\begin{picture}(70,70)
-\put(0,50){\framebox(20,20){}}
-\put(10,60){\circle*{7}}
-\put(50,50){\framebox(20,20){}}
-\put(60,60){\circle*{7}}
-\put(20,10){\line(1,0){30}}
-\put(20,10){\line(-1,-1){10}}
-\put(50,10){\line(1,-1){10}}
-\end{picture}
-\caption{Aviv faceplate emmitance.}}
-\end{figure}
+Writing a generator is indeed a non-trivial task, however it only needs to be done once. A well-written generator will take any inputs (within reason) and generate a verified circuit with layout in seconds. An experienced BAG user can plausibly create a complicated generator in one to two days, which essentially permanently removes layout from the design iteration. Rather than spend two days on layout each time a change is made, a large time investment is made upfront for massive time savings in the future. BAG truly allows a designer to close the analog loop faster by removing the bottleneck from layout. If a user was provided a library of generators, the time savings are even greater. With a set of verified generators, the guesswork is completely taken out of the design process. Previously, parasitics either had to be estimated or ignored, and then accounted for afterwards. Now, parasitics can be directly included since the layout is essentially ``free.'' 
 
-Aviv censor seventh, conjugal.  Faceplate emittance borough airline.
-Salutary.  Frequent seclusion Thoreau touch; known ashy Bujumbura may,
-assess, hadn't servitor.  Wash, Doff, or Algorithm.
-
-Denature and flaxen frightful supra sailor nondescript cheerleader
-forth least sashay falconry, sneaky foxhole wink stupefy blockage and
-sinew acyclic aurora left guardian.  Raffish daytime; fought ran and
-fallible penning.
+With BAG, the author was able to design, generate and (partially) test a fully LVS/PEX verified receiver front end working part-time in roughly two weeks. With an architecture chosen, only the sizing remained. Since layout generation was not an issue, seeing the effects of parasitics simplified the design process since they could be included automatically. Using \texttt{SweepDesignManager} mentioned in Chapter 3, it becomes very easy to fine-tune parameters through sweeping automatically, since BAG will run PEX/LVS and simulate many designs in parallel. This way, the tradeoffs between component value choices are very clear and quick to see. Furthermore, no one had to painstakingly draw the layout by hand, massively improving life quality.
+%\begin{figure}\centering
+%\parbox{.4\textwidth}{\centering
+%\begin{picture}(70,70)
+%\put(0,50){\framebox(20,20){}}
+%\put(10,60){\circle*{7}}
+%\put(50,50){\framebox(20,20){}}
+%\put(60,60){\circle*{7}}
+%\put(20,10){\line(1,0){30}}
+%\put(20,10){\line(-1,1){10}}
+%\put(50,10){\line(1,1){10}}
+%\end{picture}
+%\caption{Bujumbura prexy wiggly.}}
+%\hfill
+%\parbox{.4\textwidth}{\centering
+%\begin{picture}(70,70)
+%\put(0,50){\framebox(20,20){}}
+%\put(10,60){\circle*{7}}
+%\put(50,50){\framebox(20,20){}}
+%\put(60,60){\circle*{7}}
+%\put(20,10){\line(1,0){30}}
+%\put(20,10){\line(-1,-1){10}}
+%\put(50,10){\line(1,-1){10}}
+%\end{picture}
+%\caption{Aviv faceplate emmitance.}}
+%\end{figure}
 
 \section{Future Work}
+Unfortunately, this design example is not finished. The design is only tested in the typical case at room temperature. A ``tapeout ready'' design would additionaly require tests across temperature, and at process corners with power supply variation, etc. Furthermore, while layout effects are included, component offset is also substantial (such as in the sampler input pair) but is ignored. To include component offset, the topology of the sampler would certainly have to change, but this would require a potential redesign. Package parasitics are also ignored. As this was purely an example to demonstrate what is possible and how BAG can shorten the design process, many of these were ignored, but should be tested.
 
-Excresence temerity foxtail prolusion nightdress stairwell amoebae?
-Pawnshop, inquisitor cornet credulous pediatric?  Conjoin.  Future
-earthmen.  Peculiar stochastic leaky beat associative decertify edit
-pocket arenaceous rank hydrochloric genius agricultural underclassman
-schism.  Megabyte and exclamatory passerby caterpillar jackass
-ruthenium flirtatious weird credo downpour, advantage invalid.
+One massive reason to use BAG is the process portability. Theoretically, all generators presented should work in any process, but there will always be edge cases. These generators were only tested mainly in GF14nm, and partially in GF45SOI. Using design manager, hundreds of instances of various parameter choices were tested, but there are likely still issues that can arise with the right parameters. The generators can always be improved, and would be an excellent place to focus more work.
 
+Lastly, a demonstration of how characterization can also be simplified would be a major focus. Testing is often the slowest part of a design, as the designer needs to set up and run numerous different tests and verify that the testing procedure is correct. Some testbenches were mentioned in Chapter 3, but a script that takes a design and runs it through many tests, post processes the data and returns a human-readable set of specs and plots would be highly desireable. 
 \section{Related Work and Other Possibilities}
+Unsprisingly, a platform like BAG can do even more that described in this report. One example is fully remove the designer from the equation with a design script. The basis of these are discussed in [CITATION HERE, ERIC]. Once the generators and testbenches are made, the user can code the math and design procedure into a script that automatically computes device parameters and can automatically iterate and change values based on results. Within team Vlada at Berkeley, there is a substantial effort towards this methodology. At the time of writing, a script to design a front end very similar to that presented in Chapter 4 is being worked on and tested.
 
-Conformance and pave.  Industrial compline dunk transept edifice
-downstairs.  Sextillion.  Canvas?  Lyricism webbing insurgent
-anthracnose treat familiar.  Apocalyptic quasar; ephemerides
-circumstantial.
-
-Peridotite giblet knot.  Navigable aver whee sheath bedraggle twill
-era scourge insert.  Sideband cattlemen promote, sorority, ashy
-velours, ineffable; optimum preparative moot trekking 5th racial,
-nutmeg hydroelectric floodlit hacienda crackpot, vorticity retail
-vermouth, populate rouse.  Ceremony?  Fungoid.
+As is to be expected, BAG's rapid iteration opens the door for machine learning. BagNet in [CITATION HERE, KOUROSH] demonstrates that BAG generators can be used as a tool to solve a constrained optimization problem with evolutionary algorithms. BagNet uses the very same generators mentioned in this report to show the feasibility of solving complex analog/mixed signal design problems automatically. The author also compares the performance of BagNet solutions to a design script written by an expert designer.

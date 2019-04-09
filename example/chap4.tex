@@ -7,7 +7,7 @@ To demonstrate the capabilities of BAG, an optical reciever design from concept 
 \section{Problem Statement and Architecture}
 Photonic communication systems transmit and recieve data using light, meaning that the reciever element must be a photodiode. A reverse biased photodiode reciever element can be modeled as a current source with some capacitance in parallel. This is the ``input',' analgous to an antenna in typical RF recievers. For this design, the following arbitrary specs are required:
 \begin{itemize}
-\item 14nm FinFET technology
+\item GF14nm technology
 \item A data rate of 25GBps
 \item A photodiode capacitance of 50fF
 \item $40\mu A$ peak to peak photodiode current
@@ -26,13 +26,9 @@ The architecture is based off the reciever in [CITATION HERE, KRISHNA] and is sh
 \label{fig:System Architecture}
 \end{figure}
 
-This reciever is a quad data rate (QDR) reciever with each comparator operating in $90^\circ$ phase offsets at a quarter of the clock rate to reduce the comparator constraints. Technically, only a single comparator clocked at 25GHz is necessary, however the time required for a comparator to decide between a 1 or 0 bit is finite, and mostly determined by device limitations rather than designer's choice. To meet the target, we use four comparators that operate only a quarter of the time to allow enough time for decision making and regeneration.
+This reciever is a quad data rate (QDR) reciever with each comparator operating in $90^\circ$ phase offsets at a quarter of the clock rate to reduce the comparator constraints. Technically, only a single comparator clocked at 25GHz is necessary, however the time required for a comparator to decide between a 1 or 0 bit is finite, and mostly determined by device limitations rather than designer's choice. To meet the target, we use four comparators that operate only a quarter of the time to allow enough time for decision making and regeneration.This will be further discussed in following parts of this chapter.
 
-\begin{center}
-Diagram with distribution of one clock cycle vs regen + decision time goes here with some theoretical maximum ideal clock overlaid.
-\end{center}
-
-This will be further discussed in following parts of this chapter. Another design choice made is to drive the $0^\circ$ and $180^\circ$ offset comparators with the same preamp, and $90^\circ$and $270^\circ$ together. This was done to reduce the effect of back-injection of the clock into the circuit elements before it.
+Another design choice made is to drive the $0^\circ$ and $180^\circ$ offset comparators with the same preamp, and $90^\circ$and $270^\circ$ together. This was done to reduce the effect of back-injection of the clock into the circuit elements before it.
 
 The transimpedance amplifier (TIA) is the main gain stage and is used to convert the incoming current waveform into a voltage. Since the TIA is the first block in the chain, the Friis formula of cascaded noise figures
 
