@@ -1,11 +1,11 @@
 \chapter{Design Problem: An Optical Receiver}
 
-Photonics is a relatively new field dating back to [DATE HERE]. With the increasing possibility of incorporating photonics elements on chip with the electronics, optical circuits have become a research hotspot. 
+Photonics is a relatively new field, but the increasing possibility of incorporating photonics elements on chip with the electronics has led to optical circuits becoming a research hotspot. 
 
 To demonstrate the capabilities of BAG, an optical receiver design from concept to verification is shown.
 
 \section{Problem Statement and Architecture}
-Photonic communication systems transmit and receive data using light, meaning that the receiver element must be a photo diode. A reverse biased photo diode receiver element can be modeled as a current source with some capacitance in parallel. This is the ``input',' analogous to an antenna in typical RF receivers. For this design, the following arbitrary specs are required:
+Photonic communication systems transmit and receive data using light, meaning that the receiver element must be a photo diode. A reverse biased photo diode receiver element can be modeled as a current source with some capacitance in parallel. This is the ``input'', analogous to an antenna in typical RF receivers. For this design, the following arbitrary specs are required:
 \begin{itemize}
 \item GF14nm technology
 \item A data rate of 25Gbps
@@ -15,10 +15,10 @@ Photonic communication systems transmit and receive data using light, meaning th
 \item Must use BAG for generation and the majority of testing
 \end{itemize}
 
-There are no power constraints or architecture constraints with the condition that any chosen architecture will be implemented in BAG. We will assume the photonics are already implemented, and we will also not simulate for temperature, voltage or process variations. Each transistor will be of a unit size, and only the number of fingers will change. Noise in general should be low, but there is no strict value requirement. We will see in the ``Future Discussions'' [CHANGE THIS TO APPROPRIATE TITLE] of Chapter 5 [GET PROPER CHAPTER] how this could be extended, and an example of how one could generalize the design procedure automatically.
+There are no power constraints or architecture constraints with the condition that any chosen architecture will be implemented in BAG. We will assume the photonics are already implemented, and we will also not simulate for temperature, voltage or process variations. Each transistor will be of a unit size, and only the number of fingers will change. Noise in general should be low, but there is no strict value requirement. We will see in the ``Future Work'' of Chapter 5 how this could be extended, and an example of how one could generalize the design procedure automatically.
 
 \subsection{Architecture Choice and Concerns}
-The architecture is based off the receiver in [CITATION HERE, KRISHNA] and is shown below:
+The architecture is based off the receiver in \cite{settaluri_photonic_nodate} and is shown below:
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.7\textwidth]{architecture}
@@ -30,7 +30,7 @@ This receiver is a quad data rate (QDR) receiver with each comparator operating 
 
 Another design choice made is to drive the $0^\circ$ and $180^\circ$ offset comparators with the same preamp, and $90^\circ$and $270^\circ$ together. This was done to reduce the effect of back-injection of the clock into the circuit elements before it.
 
-The transimpedance amplifier (TIA) is the main gain stage and is used to convert the incoming current waveform into a voltage. Since the TIA is the first block in the chain, the Friis formula of cascaded noise figures
+The transimpedance amplifier (TIA) is the main gain stage and is used to convert the incoming current waveform into a voltage. Since the TIA is the first block in the chain, the formula for cascaded noise figures
 
 \begin{equation}
 \label{friis}
@@ -39,7 +39,7 @@ F_{total}=F_1+\frac{F_2-1}{G_1}+\frac{F_3-1}{G_1G_2}+...
 
 (where $F_1$ and $G_i$ are the noise factor and gain of stage $i$ respectively) tells us we want the TIA to be high gain and low noise in order to reduce the overall noise factor of the system.
 
-The TIA is followed by a continuous time linear equalizer (CTLE). A CTLE has a zero in its transfer function that can be placed at a specific frequency, which theoretically allows the designer to extend the bandwidth of previous stages. One concern of the CTLE however, is that it can only, in general, shape the energy of the frequency spectrum. This means that usually to increase the gain at high frequency, we must throw away DC gain, as shown below:
+The TIA is followed by a continuous time linear equalizer (CTLE). A CTLE has a zero in its transfer function that can be placed at a specific frequency, which theoretically allows the designer to extend the bandwidth of previous stages as in figure \ref{fig:CTLE Operation}. One concern of the CTLE however, is that it can only, in general, shape the energy of the frequency spectrum. This means that usually to increase the gain at high frequency, we must throw away DC gain, as shown below:
 
 \begin{figure}[h]
 \centering
@@ -48,7 +48,7 @@ The TIA is followed by a continuous time linear equalizer (CTLE). A CTLE has a z
 \label{fig:CTLE Operation}
 \end{figure}
 
-Since we are targeting 25Gbps, the empirical target bandwidth the front end receiver needs for a relatively optimal trade off in power and introduced ISI is $\approx 0.7\times$ the data rate, or roughly 17GHz [CITATION HERE]. The bare minimum would be roughly half, or 12.5GHz. We will target somewhere in between. A good rule of thumb for comparators is that they need milivolts of signal swing to consistently measure correctly. The gain bandwidth product of the TIA is unlikely to be large enough to get a $40\mu A$ signal to roughly $10mV$ across a frequency range of 0Hz to 17GHz and be low noise, so we increase the TIA gain and lower the bandwidth so that even with the CTLE DC gain reduction, we can still get decent gain in conjunction with the CTLE bandwidth extension. 
+Since we are targeting 25Gbps, the empirical target bandwidth the front end receiver needs for a relatively optimal trade off in power and introduced ISI is $\approx 0.7\times$ the data rate, or roughly 17GHz \cite{settaluri_first_2017}. The bare minimum would be roughly half, or 12.5GHz. We will target somewhere in between. A good rule of thumb for comparators is that they need milivolts of signal swing to consistently measure correctly. The gain bandwidth product of the TIA is unlikely to be large enough to get a $40\mu A$ signal to roughly $10mV$ across a frequency range of 0Hz to 17GHz and be low noise, so we increase the TIA gain and lower the bandwidth so that even with the CTLE DC gain reduction, we can still get decent gain in conjunction with the CTLE bandwidth extension. 
 
 The final stage before the comparators is a set of passively loaded differential amplifiers. Their purpose is threefold. The CTLE would have to simultaneously drive four comparators, which is a fairly large capacitive load. This limits the maximum achievable peaking gain by pushing in the second pole. Additionally, the comparators tend to inject their clock signal backwards which can impact the CTLE's operation periodically. The amplifiers serve as buffers which will isolate the kickback, and act as an intermediate step to reduce the amount of capacitance the CTLE has to drive. The DC gain is also expected to be too low due to the CTLE's reduction, so the amplifiers will provide a relatively small gain ($\approx 2\times$) to get as much swing as possible.
 
@@ -101,8 +101,7 @@ The TIA is implemented as a pseudo-differential structure as two CMOS inverters 
 \caption{TIA Schematic}
 \end{figure}
 
-[CITATION HERE] about Nandish's paper with pseudo diff performance and why it was better for common mode or something.
-At DC, if $I_{DC}=0$ then the input and output common mode voltages are equal. The purpose of the DC current source is to force the output common mode to be higher if desired. Since the output will sit about mid-rail, that may not be enough to bias the input of the CTLE, so we will need DC current through $R_{fb}$ to force this difference.
+The purpose of implementing the TIA is due to the usage in both \cite{mehta_12gb/s_2016} and \cite{settaluri_photonic_nodate}. The photodetector can split into a differential input that achieves good performance. At DC, if $I_{DC}=0$ then the input and output common mode voltages are equal. The purpose of the DC current source is to force the output common mode to be higher if desired. Since the output will sit about mid-rail, that may not be enough to bias the input of the CTLE, so we will need DC current through $R_{fb}$ to force this difference.
 
 If we assume the inverters are an amplifier with gain $-A_v$ then the input impedance can be found by using Miller's theorem. 
 \begin{equation}
@@ -119,9 +118,7 @@ Thus the input pole should be roughly at
 \label{TIA input pole}
 \omega_p=\frac{1}{(1+A_v)R_{fb}C_{pd}}
 \end{equation}
-From the small signal model of one half of the circuit (shown below) we can derive the gain.
 
-\begin{center}
 \begin{figure}[h]
 \centering
 \ctikzset{tripoles/mos style/arrows}
@@ -135,11 +132,10 @@ From the small signal model of one half of the circuit (shown below) we can deri
 \draw (7, 2.5) to[short, -o] (8, 2.5) node[label={[font=\footnotesize]0:$v_{out}$}] {};
 \draw (7, 0) to[short] (0, 0);
 \end{circuitikz}
-\label{TIA Small Signal Model}
 \caption{TIA Small Signal Model}
+\label{fig:PLEASE}
 \end{figure}
-\end{center}
-KCL at the output node gives
+From the small signal model of one half of the circuit (shown in figure \ref{fig:PLEASE}, ignoring $C_{pd}$) we can derive the gain. KCL at the output node gives
 \begin{equation}
 \label{TIA gain KCL}
 \frac{v_{out}}{r_{on}||r_{op}}+(g_{mn}+g_{mp})(i_{in}R_{fb}+v_{out})-i_{in}=0
@@ -149,19 +145,19 @@ which simplifies to
 \label{TIA gain full}
 \frac{v_{out}}{i_{in}}=\frac{R_{fb}(g_{mn}+g_{mp})-1}{-(g_{mn}+g_{mp})-\frac{1}{r_{on}||r_{op}}}
 \end{equation}
-If we assume $R_{fb}$ and $r_{on}||r_{op}$ are both much larger than one, then the transfer function simplifies to
+If we assume $R_{fb}$ and $r_{on}||r_{op}$ are both much larger than 1, then the transfer function simplifies to
 \begin{equation}
 \label{TIA gain}
 |\frac{v_{out}}{i_{in}}|=R_{fb}
 \end{equation}
-The gain is then approximately just $R_{fb}$. For a given choice of $R_{fb}$, we then use BAGs rapid iteration to sweep for transistor widths. As the size increases, device parasitics become dominant over the external capacitances, so there is an optimal size for bandwidth. Once the maximum bandwidth is found, this sets the device sizes. Since we know the CTLE can only get a couple of GHz of bandwidth extension, we can calculate and then sweep the TIA resistor to see what resistance gives a bandwidth of around 12GHz. If we assume the CTLE will cut the DC gain by roughly a third, and we can get about 1.5x amplification from the preamps, then the overall gain should still be high enough for the comparator.
+The gain is then approximately just $R_{fb}$. For a given choice of $R_{fb}$, we then use BAGs rapid iteration to sweep for transistor widths. As the size increases, device parasitics become dominant over the external capacitances, so there is an optimal size for bandwidth. Once the maximum bandwidth is found, this sets the device sizes. Since we know the CTLE can only get a couple of GHz of bandwidth extension, we can calculate and then sweep the TIA resistor to see what resistance gives a bandwidth of around 9GHz. If we assume the CTLE will cut the DC gain by roughly a third, and we can get about 1.5x amplification from the preamps, then the overall gain should still be high enough for the comparator.
 
 To set the output common mode, we can assume the input will be around mid-rail, so the output can be approximated as follows:
 \begin{equation}
 \label{tia_dc}
 \frac{V_{o}-\frac{V_{DD}}{2}}{R_{fb}}=I_{DC}
 \end{equation}
-In order to bias the CTLE input, we want this to potentially be a little higher than midrail since the $V_{GS}$ needs to be large enough to give headroom to the tail transistors. Plugging into \ref{tia_dc} gives a starting point that can then be swept using BAG for better accuracy. Post-PEX hand-simulation is then used to fine tune the current the get the desired result. Note that by increasing the output common mode, the gain can reduce. This means that the resistance might need to be higher than anticipated. This is also determined by simulating BAG generated instances.
+In order to bias the CTLE input, we want this to potentially be a little higher than midrail since the $V_{GS}$ needs to be large enough to give headroom to the tail transistors. Plugging into equation \ref{tia_dc} gives a starting point that can then be swept using BAG for better accuracy. Post-PEX hand-simulation is then used to fine tune the current the get the desired result. Note that by increasing the output common mode, the gain can reduce. This means that the resistance might need to be higher than anticipated. This is also determined by simulating BAG generated instances.
 
 We were able to achieve a gain of 1500 with a bandwidth of 8.55GHz. In order to shift the common mode, $I_{DC}$ was set to $55\mu A$.
 
@@ -197,7 +193,7 @@ A CTLE is a simple amplifier, degenerated by a parallel resistor capacitor combi
 \caption{CTLE Schematic}
 \end{figure}
 
-Since we know the pole location of the TIA, we can design the CTLE to have its zero in close proximity. Firstly, we draw the approximate differential mode half circuit:
+Since we know the pole location of the TIA after simulation, we can design the CTLE to have its zero in close proximity. Firstly, we draw the approximate differential mode half circuit:
 
 \begin{figure}[h]
 \centering
@@ -360,11 +356,11 @@ The comparator is implemented as a double tail sense amplifier.
 \caption{Double Tail Schematic}
 \end{figure}
 \clearpage
-The DTSA consists of a clocked differential pair that feeds into cross-coupled inverters. Much like the classic StrongArm sense-amp [CITATION HERE], the DTSA first precharges the $D_{in}$ and $D_{ip}$ nodes up to $V_{DD}$. After $CLK$ goes high, the input pairs activate and begin to drain charge from the parasitic capacitance at nodes $D_{in}$ and $D_{ip}$. Depending on which input is larger, one side will discharge faster which will turn off one of the switches connected to those nodes faster than the other. This sets the value in the cross-coupled inverters which is then reinforced through positive feedback. 
+The DTSA consists of a clocked differential pair that feeds into cross-coupled inverters. Much like the classic StrongArm sense-amp \cite{razavi_strongarm_2015}, the DTSA first precharges the $D_{in}$ and $D_{ip}$ nodes up to $V_{DD}$. After $CLK$ goes high, the input pairs activate and begin to drain charge from the parasitic capacitance at nodes $D_{in}$ and $D_{ip}$. Depending on which input is larger, one side will discharge faster which will turn off one of the switches connected to those nodes faster than the other. This sets the value in the cross-coupled inverters which is then reinforced through positive feedback. 
 
 When $CLK$ goes low, the circuit resets and precharges the $D_{ip}/D_{in}$ nodes for the next cycle.
 
-A typical cycle of the DTSA with a differential input of 10mV is plotted in \ref{fig:dtsa_op}. The clock is generated by taking ideal clocks and passing them through a chain of inverters to generate both the real $CLK$ and $\overline{CLK}$ signals.
+A typical cycle of the DTSA with a differential input of 10mV is plotted in figure \ref{fig:dtsa_op}. The clock is generated by taking ideal clocks and passing them through a chain of inverters to generate both the real $CLK$ and $\overline{CLK}$ signals.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{dtsa_one_cycle}
@@ -374,7 +370,7 @@ A typical cycle of the DTSA with a differential input of 10mV is plotted in \ref
 
 The comparator usually is the first thing one would design, as its limitations generally set the required gain and noise specs for the front end. In this project, the comparator was designed last, since there is no power constraint. The rate at which voltage is reduced from $D_{ip}/D_{in}$ is based on the current through the input pairs. By increasing the size of the input pairs, we can create a voltage difference much more quickly (assuming there is no process offset in the input pairs) which allows even small inputs to be sensed before the cycle ends. Thus, as long as our input is on the order of milivolts, we should be able to sense this.
 
-As a test, we determine what the approximate noise tolerance of the DTSA is. We input a small differential signal (about 1mV) and run a transient simulation with noise over many cycles. The fraction of incorrect evaluations to the total allows us to approximate $\sigma_n$, or the standard deviation of the noise tolerance for the DTSA. The results of this simulation are shown in \ref{fig:dtsa_noise}.
+As a test, we determine what the approximate noise tolerance of the DTSA is. We input a small differential signal (about 1mV) and run a transient simulation with noise over many cycles. The fraction of incorrect evaluations to the total allows us to approximate $\sigma_n$, or the standard deviation of the noise tolerance for the DTSA. The results of this simulation are shown in figure \ref{fig:dtsa_noise}.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{dtsa_noise_tolerance}
@@ -384,7 +380,7 @@ As a test, we determine what the approximate noise tolerance of the DTSA is. We 
 With a differential input of 1mV, only one in 100 inputs failed. This implies two things. One, that 1mV is approximately $3\sigma_n$. This means we should budget about 3mV of the eye opening to noise tolerance for the DTSA for a BER of $10^{-12}$. Secondly, the DTSA minimum input voltage is less than 1mV, assuming no noise. Thus, as long as our input has a swing of 1mV in addition to the noise budget, then we should be able to obtain a bit error rate of $10^{-12}$. This, of course, ignores process variation. Process variation introduces an offset that affects the current in each branch. From a Monte Carlo simulation, one can find the average offset which can then additionally be added to the eye opening budget. There are also topologies that can correct for offset, which would not completely eliminate the issue, but would certainly reduce it.
 \clearpage
 \section{Design Verification}
-There were four simulations done to verify the behavior of the entire receiver. Firstly, a simple AC simulation of the front-end chain up to the samplers in order to see if the circuit provides enough gain. This is shown in \ref{fig:afe_ac}
+There were four simulations done to verify the behavior of the entire receiver. Firstly, a simple AC simulation of the front-end chain up to the samplers in order to see if the circuit provides enough gain. This is shown in figure \ref{fig:afe_ac}
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{rx_ac_char}
@@ -392,7 +388,7 @@ There were four simulations done to verify the behavior of the entire receiver. 
 \label{fig:afe_ac}
 \end{figure}
 \clearpage
-To determine how much noise the amplifier chain introduces, an AC noise simulation was also run. The power spectral density is plotted in \ref{fig:psd}.
+To determine how much noise the amplifier chain introduces, an AC noise simulation was also run. The power spectral density is plotted in figure \ref{fig:psd}.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{ac_noise}
@@ -404,7 +400,7 @@ Using Python to integrate this function up to 25GHz gives an rms noise of $4.6\m
 \clearpage
 From the previous sections, we know that the minimum input is approximately 1mV with a noise tolerance of 3mV for a BER of $10^{-12}$. For an input of $40\mu A$ peak-to-peak, we achieve a gain of 1200 which puts the input amplitude at roughly 50mV peak-to-peak. This should be plenty. Unfortunately, the desired bandwidth was not met, although the bandwidth does surpass the theoretical minimum. This will mostly affect ISI performance, which will be seen in the next simulation.
 
-To determine over many cycles how the AFE performs, we measure the eye diagram at the sampler inputs. This is shown in \ref{fig:eye}.
+To determine over many cycles how the AFE performs, we measure the eye diagram at the sampler inputs. This is shown in figure \ref{fig:eye}.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{afe_eye}
@@ -413,7 +409,7 @@ To determine over many cycles how the AFE performs, we measure the eye diagram a
 \end{figure}
 As can be seen, there is a fairly large eye opening which surpasses the minimum required swing for proper evaluation.
 \clearpage
-Lastly, a PRBS32 pattern is fed into the receiver, and the sampler outputs are monitored in a transient simulation. Note that a this architecture would not be sufficient due to the fact that the waveforms need to be adjusted in time to center the eye opening with the clock edges. This adjustment was done manually for this test. Also, since each sampler is only sampling once every 4 bits, the outputs are sliced and manually stitched together. A portion of the test input and output are shown in \ref{fig:prbs}. The patterns are clearly identical with a time offset through the front end chain.
+Lastly, a PRBS32 pattern is fed into the receiver, and the sampler outputs are monitored in a transient simulation. Note that this architecture would not operate sufficiently due to the fact that the waveforms need to be adjusted in time to center the eye opening with the clock edges. This adjustment was done manually for this test. Also, since each sampler is only sampling once every 4 bits, the outputs are sliced and manually stitched together. A portion of the test input and output are shown in figure \ref{fig:prbs}. The patterns are clearly identical with only a time offset through the front end chain.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{prbs_out}
