@@ -29,35 +29,9 @@ Another option is nearly identical, but with 3-bit resistor DACs instead of a si
 \caption{Passive diff-amp with resistor DAC}
 \label{fig:passive_dac}
 \end{figure}
-%\begin{figure}\centering
-%\parbox{.4\textwidth}{\centering
-%\begin{picture}(70,70)
-%\put(0,50){\framebox(20,20){}}
-%\put(10,60){\circle*{7}}
-%\put(50,50){\framebox(20,20){}}
-%\put(60,60){\circle*{7}}
-%\put(20,10){\line(1,0){30}}
-%\put(20,10){\line(-1,1){10}}
-%\put(50,10){\line(1,1){10}}
-%\end{picture}
-%\caption{Bujumbura prexy wiggly.}}
-%\hfill
-%\parbox{.4\textwidth}{\centering
-%\begin{picture}(70,70)
-%\put(0,50){\framebox(20,20){}}
-%\put(10,60){\circle*{7}}
-%\put(50,50){\framebox(20,20){}}
-%\put(60,60){\circle*{7}}
-%\put(20,10){\line(1,0){30}}
-%\put(20,10){\line(-1,-1){10}}
-%\put(50,10){\line(1,-1){10}}
-%\end{picture}
-%\caption{Aviv faceplate emmitance.}}
-%\end{figure}
-
 
 \section{Getting Fancier: A Double Tail Sense Amplifier and Latch}
-Yet another crucial compoenent in an analog reciever is the sampler. Before converting to purely digital processing, the recieved bits must be processed as either a 1 or a 0 through the use of a sampling circuit. While there are many ways to implement sampling, this report makes use of a double tail sense amp (DTSA). The schematic and operation are shown in Chapter 4. An example layout is shown in \ref{fig:dtsa_ex}.
+Yet another crucial component in an analog receiver is the sampler. Before converting to purely digital processing, the received bits must be processed as either a 1 or a 0 through the use of a sampling circuit. While there are many ways to implement sampling, this report makes use of a double tail sense amp (DTSA). The schematic and operation are shown in Chapter 4. An example layout is shown in \ref{fig:dtsa_ex}.
 \begin{figure}[h]
 \centering
 \begin{subfigure}{.4\linewidth}
@@ -82,7 +56,7 @@ The DTSA block exemplifies even more of BAGs capability to include customization
 \caption{DTSA with offset correction}
 \label{fig:dtsa_enoc}
 \end{figure}
-Finally, the output of a comparator like this is only valid for a short time. We need a latch to store the value inbetween evaluation cycles. Thankfully, this is possible with BAG. Using TemplateBase we can attach a latch made previously to the output of the DTSA, like in \ref{fig:dtsa_d2s}.
+Finally, the output of a comparator like this is only valid for a short time. We need a latch to store the value in between evaluation cycles. Thankfully, this is possible with BAG. Using TemplateBase we can attach a latch made previously to the output of the DTSA, like in \ref{fig:dtsa_d2s}.
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.4\textwidth]{dtsa_d2s}
@@ -90,8 +64,8 @@ Finally, the output of a comparator like this is only valid for a short time. We
 \label{fig:dtsa_d2s}
 \end{figure}
 
-\section{Endless Possibilities: An Entire Analog Front End Reciever or Two}
-Manually creating the layout for an entire receiver (AFE) is a daunting process. As a final demonstration of how a user can start with small blocks and eventually create large, complex generators, two different front end architectures are shown. It is important to note that the size and complexity of these circuits makes is non-trivial, and would require significant manual work. These generators are capable of creating and extracting the entire layout in seconds, which truly allows faster design interation by removing the bottleneck almost entirely. 
+\section{Endless Possibilities: An Entire Analog Front End Receiver or Two}
+Manually creating the layout for an entire receiver (AFE) is a daunting process. As a final demonstration of how a user can start with small blocks and eventually create large, complex generators, two different front end architectures are shown. It is important to note that the size and complexity of these circuits makes is non-trivial, and would require significant manual work. These generators are capable of creating and extracting the entire layout in seconds, which truly allows faster design iteration by removing the bottleneck almost entirely. 
 
 The first front end (\ref{fig:afe1}) is a chain of a TIA followed by a Cherry-Hooper amplifier stage, then a CTLE and two parallel preamplifiers. 
 \begin{figure}[h]

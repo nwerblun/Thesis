@@ -1,24 +1,24 @@
-\chapter{Design Problem: An Optical Reciever}
+\chapter{Design Problem: An Optical Receiver}
 
 Photonics is a relatively new field dating back to [DATE HERE]. With the increasing possibility of incorporating photonics elements on chip with the electronics, optical circuits have become a research hotspot. 
 
-To demonstrate the capabilities of BAG, an optical reciever design from concept to verification is shown.
+To demonstrate the capabilities of BAG, an optical receiver design from concept to verification is shown.
 
 \section{Problem Statement and Architecture}
-Photonic communication systems transmit and recieve data using light, meaning that the reciever element must be a photodiode. A reverse biased photodiode reciever element can be modeled as a current source with some capacitance in parallel. This is the ``input',' analgous to an antenna in typical RF recievers. For this design, the following arbitrary specs are required:
+Photonic communication systems transmit and receive data using light, meaning that the receiver element must be a photo diode. A reverse biased photo diode receiver element can be modeled as a current source with some capacitance in parallel. This is the ``input',' analogous to an antenna in typical RF receivers. For this design, the following arbitrary specs are required:
 \begin{itemize}
 \item GF14nm technology
-\item A data rate of 25GBps
-\item A photodiode capacitance of 50fF
-\item $40\mu A$ peak to peak photodiode current
+\item A data rate of 25Gbps
+\item A photo diode capacitance of 50fF
+\item $40\mu A$ peak to peak photo diode current
 \item $V_{DD}=0.8V$
 \item Must use BAG for generation and the majority of testing
 \end{itemize}
 
-There are no power constraints or architecture constraints with the condition that any chosen architecture will be implemented in BAG. We will assume the photonoics are already implemented, and we will also not simulate for temperature, voltage or process variations. Each transistor will be of a unit size, and only the number of fingers will change. Noise in general should be low, but there is no strict value requirement. We will see in the ``Future Discussions'' [CHANGE THIS TO APPROPRIATE TITLE] of Chapter 5 [GET PROPER CHAPTER] how this could be extended, and an example of how one could generalize the design procedure automatically.
+There are no power constraints or architecture constraints with the condition that any chosen architecture will be implemented in BAG. We will assume the photonics are already implemented, and we will also not simulate for temperature, voltage or process variations. Each transistor will be of a unit size, and only the number of fingers will change. Noise in general should be low, but there is no strict value requirement. We will see in the ``Future Discussions'' [CHANGE THIS TO APPROPRIATE TITLE] of Chapter 5 [GET PROPER CHAPTER] how this could be extended, and an example of how one could generalize the design procedure automatically.
 
 \subsection{Architecture Choice and Concerns}
-The architecture is based off the reciever in [CITATION HERE, KRISHNA] and is shown below:
+The architecture is based off the receiver in [CITATION HERE, KRISHNA] and is shown below:
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.7\textwidth]{architecture}
@@ -26,7 +26,7 @@ The architecture is based off the reciever in [CITATION HERE, KRISHNA] and is sh
 \label{fig:System Architecture}
 \end{figure}
 
-This reciever is a quad data rate (QDR) reciever with each comparator operating in $90^\circ$ phase offsets at a quarter of the clock rate to reduce the comparator constraints. Technically, only a single comparator clocked at 25GHz is necessary, however the time required for a comparator to decide between a 1 or 0 bit is finite, and mostly determined by device limitations rather than designer's choice. To meet the target, we use four comparators that operate only a quarter of the time to allow enough time for decision making and regeneration.This will be further discussed in following parts of this chapter.
+This receiver is a quad data rate (QDR) receiver with each comparator operating in $90^\circ$ phase offsets at a quarter of the clock rate to reduce the comparator constraints. Technically, only a single comparator clocked at 25GHz is necessary, however the time required for a comparator to decide between a 1 or 0 bit is finite, and mostly determined by device limitations rather than designer's choice. To meet the target, we use four comparators that operate only a quarter of the time to allow enough time for decision making and regeneration.This will be further discussed in following parts of this chapter.
 
 Another design choice made is to drive the $0^\circ$ and $180^\circ$ offset comparators with the same preamp, and $90^\circ$and $270^\circ$ together. This was done to reduce the effect of back-injection of the clock into the circuit elements before it.
 
@@ -48,9 +48,9 @@ The TIA is followed by a continuous time linear equalizer (CTLE). A CTLE has a z
 \label{fig:CTLE Operation}
 \end{figure}
 
-Since we are targeting 25GBps, the emperical target bandwidth the front end reciever needs for a relatively optimal tradeoff in power and introduced ISI is $\approx 0.7\times$ the data rate, or roughly 17GHz [CITATION HERE]. The bare minimum would be roughly half, or 12.5GHz. We will target somewhere in between. A good rule of thumb for comparators is that they need milivolts of signal swing to consistently measure correctly. The gain bandwidth product of the TIA is unlikely to be large enough to get a $40\mu A$ signal to roughly $10mV$ across a frequency range of 0Hz to 17GHz and be low noise, so we increase the TIA gain and lower the bandwidth so that even with the CTLE DC gain reduction, we can still get decent gain in conjunction with the CTLE bandwidth extension. 
+Since we are targeting 25Gbps, the empirical target bandwidth the front end receiver needs for a relatively optimal trade off in power and introduced ISI is $\approx 0.7\times$ the data rate, or roughly 17GHz [CITATION HERE]. The bare minimum would be roughly half, or 12.5GHz. We will target somewhere in between. A good rule of thumb for comparators is that they need milivolts of signal swing to consistently measure correctly. The gain bandwidth product of the TIA is unlikely to be large enough to get a $40\mu A$ signal to roughly $10mV$ across a frequency range of 0Hz to 17GHz and be low noise, so we increase the TIA gain and lower the bandwidth so that even with the CTLE DC gain reduction, we can still get decent gain in conjunction with the CTLE bandwidth extension. 
 
-The final stage before the comparators is a set of passively loaded differential amplifiers. Their purpose is threefold. The CTLE would have to simultaneously drive four comparators, which is a fairly large capacitve load. This limits the maximum achievable peaking gain by pushing in the second pole. Additionally, the comparators tend to inject their clock signal backwards which can impact the CTLE's operation periodically. The amplifiers serve as buffers which will isolate the kickback, and act as an intermediate step to reduce the amount of capacitance the CTLE has to drive. The DC gain is also expected to be too low due to the CTLE's reduction, so the amplifiers will provide a relatively small gain ($\approx 2\times$) to get as much swing as possible.
+The final stage before the comparators is a set of passively loaded differential amplifiers. Their purpose is threefold. The CTLE would have to simultaneously drive four comparators, which is a fairly large capacitive load. This limits the maximum achievable peaking gain by pushing in the second pole. Additionally, the comparators tend to inject their clock signal backwards which can impact the CTLE's operation periodically. The amplifiers serve as buffers which will isolate the kickback, and act as an intermediate step to reduce the amount of capacitance the CTLE has to drive. The DC gain is also expected to be too low due to the CTLE's reduction, so the amplifiers will provide a relatively small gain ($\approx 2\times$) to get as much swing as possible.
 
 
 %\begin{figure}\centering
@@ -161,7 +161,7 @@ To set the output common mode, we can assume the input will be around mid-rail, 
 \label{tia_dc}
 \frac{V_{o}-\frac{V_{DD}}{2}}{R_{fb}}=I_{DC}
 \end{equation}
-In order to bias the CTLE input, we want this to potentially be a little higher than midrail since the $V_{GS}$ needs to be large enough to give headroom to the tail transistors. Plugging into \ref{tia_dc} gives a starting point that can then be swept using BAG for better accuracy. Post-pex hand-simulation is then used to fine tune the current the get the desired result. Note that by increasing the output common mode, the gain can reduce. This means that the resistance might need to be higher than anticipated. This is also determined by simulating BAG generated instances.
+In order to bias the CTLE input, we want this to potentially be a little higher than midrail since the $V_{GS}$ needs to be large enough to give headroom to the tail transistors. Plugging into \ref{tia_dc} gives a starting point that can then be swept using BAG for better accuracy. Post-PEX hand-simulation is then used to fine tune the current the get the desired result. Note that by increasing the output common mode, the gain can reduce. This means that the resistance might need to be higher than anticipated. This is also determined by simulating BAG generated instances.
 
 We were able to achieve a gain of 1500 with a bandwidth of 8.55GHz. In order to shift the common mode, $I_{DC}$ was set to $55\mu A$.
 
@@ -260,7 +260,7 @@ From these equations, we can choose the values of the degeneration components an
 Using the above steps, we were able to achieve a bandwidth extension of about 4GHz with a DC gain of roughly 0.6. When placed in succession to the TIA, the overall gain reduces to about 850 with a bandwidth extension to about 13.5GHz.
 
 \section{Preamplifiers}
-The preamplifiers are implemented as passively-loaded differential amplifiers as shown below. The main purpose is to serve as a buffer between the CTLE and the DTSAs. The DTSAs will provide a fairly substatial capacitve load to the CTLE as well as back-inject their clock, which is undesired. The preamplifiers ideally will have a gain of around 2, but we will target a gain greater than 1. 
+The preamplifiers are implemented as passively-loaded differential amplifiers as shown below. The main purpose is to serve as a buffer between the CTLE and the DTSAs. The DTSAs will provide a fairly substantial capacitive load to the CTLE as well as back-inject their clock, which is undesired. The preamplifiers ideally will have a gain of around 2, but we will target a gain greater than 1. 
 
 \begin{figure}[h]
 \centering
@@ -384,7 +384,7 @@ As a test, we determine what the approximate noise tolerance of the DTSA is. We 
 With a differential input of 1mV, only one in 100 inputs failed. This implies two things. One, that 1mV is approximately $3\sigma_n$. This means we should budget about 3mV of the eye opening to noise tolerance for the DTSA for a BER of $10^{-12}$. Secondly, the DTSA minimum input voltage is less than 1mV, assuming no noise. Thus, as long as our input has a swing of 1mV in addition to the noise budget, then we should be able to obtain a bit error rate of $10^{-12}$. This, of course, ignores process variation. Process variation introduces an offset that affects the current in each branch. From a Monte Carlo simulation, one can find the average offset which can then additionally be added to the eye opening budget. There are also topologies that can correct for offset, which would not completely eliminate the issue, but would certainly reduce it.
 \clearpage
 \section{Design Verification}
-There were four simulations done to verify the behavior of the entire reciever. Firstly, a simple AC simulation of the front-end chain up to the samplers in order to see if the circuit provides enough gain. This is shown in \ref{fig:afe_ac}
+There were four simulations done to verify the behavior of the entire receiver. Firstly, a simple AC simulation of the front-end chain up to the samplers in order to see if the circuit provides enough gain. This is shown in \ref{fig:afe_ac}
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{rx_ac_char}
@@ -413,7 +413,7 @@ To determine over many cycles how the AFE performs, we measure the eye diagram a
 \end{figure}
 As can be seen, there is a fairly large eye opening which surpasses the minimum required swing for proper evaluation.
 \clearpage
-Lastly, a PRBS32 pattern is fed into the reciever, and the sampler outputs are monitored in a transient simulation. Note that a this architecture would not be sufficient due to the fact that the waveforms need to be adjusted in time to center the eye opening with the clock edges. This adjustment was done manually for this test. Also, since each sampler is only sampling once every 4 bits, the outputs are sliced and manually stiched together. A portion of the test input and output are shown in \ref{fig:prbs}. The patterns are clearly identical with a time offset through the front end chain.
+Lastly, a PRBS32 pattern is fed into the receiver, and the sampler outputs are monitored in a transient simulation. Note that a this architecture would not be sufficient due to the fact that the waveforms need to be adjusted in time to center the eye opening with the clock edges. This adjustment was done manually for this test. Also, since each sampler is only sampling once every 4 bits, the outputs are sliced and manually stitched together. A portion of the test input and output are shown in \ref{fig:prbs}. The patterns are clearly identical with a time offset through the front end chain.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{prbs_out}
