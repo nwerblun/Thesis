@@ -10,6 +10,32 @@
 \graphicspath{{./figs/}}
 \usepackage{circuitikz}
 \usepackage{subcaption}
+\usepackage{listings}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\tiny,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+ 
+\lstset{style=mystyle}
 % To compile this file, run "latex thesis", then "biber thesis"
 % (or "bibtex thesis", if the output from latex asks for that instead),
 % and then "latex thesis" (without the quotes in each case).
@@ -78,6 +104,7 @@
 \tableofcontents
 \clearpage
 \listoffigures
+\lstlistoflistings
 \clearpage
 
 \begin{acknowledgements}
@@ -99,7 +126,7 @@ Additional thanks to Olivia for telling me to join the group. Thanks to Kourosh 
 \include{chap5}
 % \appendix
 % \chapter{More Monticello Candidates}
-
 \printbibliography
+
 
 \end{document}

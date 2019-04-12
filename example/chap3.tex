@@ -6,22 +6,34 @@ A very commonly used block in many ICs is the differential amplifier. In the cas
 \centering
 \begin{subfigure}{.8\linewidth}
   \centering
-  \includegraphics[width=\textwidth]{passive_layout}
+  \includegraphics[width=\textwidth]{passive_layout_annotated}
   \caption{Full layout}
   \label{fig:sfig1}
 \end{subfigure}
 \begin{subfigure}{.8\linewidth}
   \centering
-\includegraphics[width=\textwidth]{passive_layout_metals}
+\includegraphics[width=\textwidth]{passive_layout_metals_annotated}
   \caption{Only the metals}
   \label{fig:sfig2}
 \end{subfigure}
 \caption{Differential amplifier layout}
 \label{fig:passive_amp}
 \end{figure}
-All generators demonstrated have wire width parametrized so each type of wire (signal, bias, clock) can have a specific, customizable width. This generator additionally allows the user to specify resistor unit cell sizes, number of parallel and series units and transistor dimensions (width, fingers).
+All generators demonstrated have wire width parametrized so each type of wire (signal, bias, clock) can have a specific, customizable width through use of \texttt{TrackManager}. This class lets the user specify a width for each layer of interest and map them to a name. For example, if the user wants a specific width for all nets carrying a clock signal, then the user can specify the width all clock wires should be on each layer. Listing \ref{lst:tr_manager} shows a sample setup. This generator additionally allows the user to specify resistor unit cell sizes, number of parallel and series units and transistor dimensions (width, fingers) the same way as demonstrated in chapter 2.
+\begin{lstlisting}[language=Python, caption=Track manager setup, label={lst:tr_manager}, float]
+tr_widths:
+    bias: {4: 2, 5: 2}
+    clk: {4: 1, 5: 1}
+    sig: {4: 1, 5: 1}
+  tr_spaces:
+    !!python/tuple ['bias', '']: {4: 1, 5: 1}
+    !!python/tuple ['clk', '']: {4: 3, 5: 3}
+    !!python/tuple ['clk', 'clk']: {4: 2, 5: 2}
+    !!python/tuple ['clk', 'bias']: {4: 3, 5: 3}
+    !!python/tuple ['sig', '']: {4: 2, 5: 2}
+\end{lstlisting}
 
-Another option is nearly identical, but with 3-bit resistor DACs instead of a single resistor as in figure \ref{fig:passive_dac}
+Another option for this generator is nearly identical, but with 3-bit resistor DACs instead of a single resistor as in figure \ref{fig:passive_dac}
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{passive_dac}
@@ -66,19 +78,38 @@ Finally, the output of a comparator like this is only valid for a short time. We
 \section{Endless Possibilities: An Entire Analog Front End Receiver or Two}
 Manually creating the layout for an entire receiver (AFE) is a daunting process. As a final demonstration of how a user can start with small blocks and eventually create large, complex generators, two different front end architectures are shown. It is important to note that the size and complexity of these circuits are non-trivial, and would require significant manual work. These generators are capable of creating and extracting the entire layout in seconds, which truly allows faster design iteration by removing the bottleneck almost entirely. 
 
-The first front end (figure \ref{fig:afe1}) is a chain of a TIA followed by a Cherry-Hooper amplifier stage, then a CTLE and two parallel preamplifiers. 
+The first front end (figure \ref{fig:afe1}) is a chain of a TIA followed by a Cherry-Hooper amplifier stage, then a CTLE with resistor DACs and a capacitor DAC and two parallel preamplifiers also with resistor DAC loads. As will be discussed in chapter 4, there are also current DACs to establish a common mode output in the first stage. 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.3\textwidth]{afe1}
-\caption{First front end}
+\begin{subfigure}{1\linewidth}
+  \centering
+  \includegraphics[width=\textwidth]{afe1_annotated}
+  \caption{AFE full layout, annotated with positions of blocks}
+  \label{fig:sfig1}
+\end{subfigure}
+\begin{subfigure}{.8\linewidth}
+  \centering
+\includegraphics[width=1\textwidth]{afe1_tall}
+  \caption{The same AFE with different parameters}
+  \label{fig:sfig2}
+\end{subfigure}
+\begin{subfigure}{.8\linewidth}
+  \centering
+\includegraphics[width=\textwidth]{afe1_tall_wide}
+  \caption{The same AFE with different parameters}
+  \label{fig:sfig2}
+\end{subfigure}
+\caption{Various generated AFE layouts}
 \label{fig:afe1}
 \end{figure}
+The important thing to note about these generated layouts is how much control the user has over the dimensions of the blocks. Extremely wide or tall, or balanced layouts are possible. The aspect ratio is fully customizable, and can be changed at a whim with a simple rerun of the script.
+
 There are also versions that include DACs for every passive element as well as current DACs for every bias input. There are versions that remove the Cherry-Hooper stage and include a comparator. 
 
-Another example of a front end is the one that will be used in Chapter 4. This AFE is a quad data rate AFE similar to the previous AFE and is comprised of the chain: TIA, CTLE, 2x parallel passive diff amps, 4x samplers. The architecture and operation is explained in Chapter 4. The layout is shown in figure \ref{fig:afe2}.
+Another example of a front end is the one that will be used in chapter 4. This AFE is a quad data rate AFE similar to the previous AFE and is comprised of the chain: TIA, CTLE, 2x parallel passive diff amps, 4x samplers. The architecture and operation is explained in Chapter 4. The layout is shown in figure \ref{fig:afe2}, and of course has the same degree of customizability alluded to in this entire chapter.
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.3\textwidth]{afe2}
+\includegraphics[width=0.5\textwidth]{afe2_annotated}
 \caption{Second front end}
 \label{fig:afe2}
 \end{figure}
