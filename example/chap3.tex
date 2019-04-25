@@ -19,7 +19,9 @@ A very commonly used block in many ICs is the differential amplifier. In the cas
 \caption{Differential amplifier layout}
 \label{fig:passive_amp}
 \end{figure}
-All generators demonstrated have wire width parametrized so each type of wire (signal, bias, clock) can have a specific, customizable width through use of \texttt{TrackManager}. This class lets the user specify a width for each layer of interest and map them to a name. For example, if the user wants a specific width for all nets carrying a clock signal, then the user can specify the width all clock wires should be on each layer. Listing \ref{lst:tr_manager} shows a sample setup. This generator additionally allows the user to specify resistor unit cell sizes, number of parallel and series units and transistor dimensions (width, fingers) the same way as demonstrated in chapter 2.
+All generators demonstrated have wire width parametrized so each type of wire (signal, bias, clock) can have a specific, customizable width through use of \texttt{TrackManager}. This class lets the user specify a width for each layer of interest and map them to a name. For example, if the user wants a specific width for all nets carrying a clock signal, then the user can specify the width all clock wires should be on each layer. Listing \ref{lst:tr_manager} shows a sample setup. When choosing a wire width to make a connection, the generator will select the width based on the passed specs, meaning wire widths can be parametrized as well. A section of code using this wire width is shown in \ref{lst:wire_widths}. 
+
+This generator additionally allows the user to specify resistor unit cell sizes, number of parallel and series units and transistor dimensions (width, fingers) the same way as demonstrated in chapter 2.
 \begin{lstlisting}[language=Python, caption=Track manager setup, label={lst:tr_manager}, float]
 tr_widths:
     bias: {4: 2, 5: 2}
@@ -31,6 +33,19 @@ tr_widths:
     !!python/tuple ['clk', 'clk']: {4: 2, 5: 2}
     !!python/tuple ['clk', 'bias']: {4: 3, 5: 3}
     !!python/tuple ['sig', '']: {4: 2, 5: 2}
+\end{lstlisting}
+\begin{lstlisting}[language=Python, caption=Track manager usage, label={lst:wire_widths}, float]
+#Create a track to put a wire on for connecting the resistor output terminal to the input terminal
+tid_extend_res_p_in_p = TrackID(
+        horz_conn_layer + 2, #A way of specifying I want the next horizontal layer above my lowest horizontal layer
+        track_idx=self.grid.coord_to_nearest_track( #Helper function
+            layer_id=horz_conn_layer + 2,
+            coord=(res_p_inp.get_bbox_array(self.grid).bottom_unit + \ #This represents the coordinate of the resistor port wire
+                   diff_amp_vout_p.get_bbox_array(self.grid).top_unit)/2,
+            unit_mode=True
+        ),
+        width=tr_manager.get_width(horz_conn_layer+2, 'bias') #This is where the parametrization comes in. By changing the width corresponding to `bias' in the spec file, the width will automatically change here.
+    )
 \end{lstlisting}
 
 Another option for this generator is nearly identical, but with 3-bit resistor DACs instead of a single resistor as in figure \ref{fig:passive_dac}
