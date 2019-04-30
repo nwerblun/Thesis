@@ -7,18 +7,18 @@
 \caption{BAG Overview}
 \label{fig:bag_top_level}
 \end{figure}
-As discussed in \cite{chang_bag2:_2018}, BAG is a framework that allows users to create, use and test process portable analog generators. Designers can create template schematics and write a scripted layout generator that incorporates their design methodology in a technology agnostic, parametrized way. At the highest level, the user inputs parameters (examples of which will be shown later in this chapter and in chapter 3) such as device dimensions and passive values into a specification file, and a script will generate a schematic, LVS tested layout and a PEX netlist. The main advantage is that the design loop discussed in chapter 1 is significantly reduced in size as post-layout effects can be directly included into the flow. 
+As discussed in \cite{chang_bag2:_2018}, BAG is a framework that allows users to create, use and test process-portable analog generators. Designers can create template schematics and write a scripted layout generator that incorporates their design methodology in a technology agnostic, parametrized way. At the highest level, the user inputs parameters, examples of which will be shown later in this chapter and in Chapter 3, such as device dimensions and passive component values into a specification file, and a script will generate a schematic, LVS tested layout and a PEX netlist. The main advantage is that the delay of the design loop discussed in Chapter 1 is significantly reduced as post-layout effects can be directly included into the flow. 
 
-As will be discussed in later sections, there are a few main components to a ``complete" generator. At the lowest levels are the layout generator and schematic generator. These are responsible for the physical process of generating the circuit representation and layout. In order to use these, there is also a top level script who's responsibility is to read a parameter file and run the schematic/layout generators with these specifications. The top level is also responsible for deciding whether or not to run LVS/PEX on the generated instance.
+As will be discussed in later sections, there are a few main components to a ``complete" generator. At the lowest levels are the layout generator and schematic generator. These are responsible for the physical process of generating the circuit representation and layout. In order to use these, there is also a top level script that reads a parameter file and runs the schematic/layout generators with these specifications. The top level is also responsible for deciding whether or not to run LVS/PEX on the generated instance.
 
-At an even higher level is the notion of a design script and design managers. Design manager is a class responsible for using the top level generator mentioned previously and overseeing the process of running tests and post-processing on test results. Design manager has associated test bench scripts which are responsible for connecting the generated device into a previously made test harness. The test bench script maps the pins of the instance to the pins of the test harness and runs predetermined SPICE simulations (i.e. AC, transient, S-parameters) before exporting the results to Python. Design manager can then pass the results to a measurement manager which can process, plot, etc. The entire process can be visualized as in figure \ref{fig:bag_top_level}.
+At an even higher level is the notion of a design script and design managers. Design manager is a class responsible for using the top level generator mentioned previously and overseeing the process of running tests and post-processing on test results. Design manager has associated test bench scripts which are responsible for connecting the generated device into a previously made test harness. The test bench script maps the pins of the instance to the pins of the test harness and runs predetermined SPICE simulations (i.e. AC, transient, S-parameters) before exporting the results to Python. Design manager can then pass the results to a measurement manager which can process, plot, etc. The entire process can be visualized as in Figure \ref{fig:bag_top_level}.
 
 The notion of a design script is an even higher level concept which allows a designer to encode their design procedure automatically into a close-looped script. The user can write a script that computes passive and transistor sizings, allow design manager to generate and test the post-PEX netlist, and iterate based on the results. The possibility of incorporating a design script will be discussed later, although a design script is not presented in this work. Design scripts are discussed in further detail in \cite{chang_bag2:_2018} and \cite{hakhamaneshi_late_nodate}.
 
 \section{Layout Generators}
 Layout generators are arguably the most important portion of the process and are extensively discussed in \cite{chang_bag2:_2018}. BAG offers a set of functions for drawing transistors, automatically routing metals, drawing vias, etc. to allow the same capability that hand design would produce. The goal of the designer is to use these functions in a generic way that automatically computes where and how to draw connections that will be DRC and LVS clean regardless of the input specifications. 
 
-The typical process of generating a large complex block is to start with small cells, like an inverter or an active diff amp using \texttt{AnalogBase}. \texttt{AnalogBase} is a class in BAG used for drawing layouts comprised entirely of transistors. Firstly, the user draws a schematic template, like shown in figure \ref{fig:sch_templ}.
+The typical process of generating a large complex block is to start with small cells, like an inverter or an active diff amp using \texttt{AnalogBase}. \texttt{AnalogBase} is a class in BAG used for drawing layouts comprised entirely of transistors. Firstly, the user draws a schematic template, like shown in Figure \ref{fig:sch_templ}.
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.8\textwidth]{sch_temp}
@@ -26,9 +26,9 @@ The typical process of generating a large complex block is to start with small c
 \label{fig:sch_templ}
 \end{figure}
 \clearpage
-This template holds only a human-readable description of the connections. The schematic will be copied over with actual values filled in by BAG afterward. One thing to note is the presence of seemingly useless transistors, like in the bottom right. These transistors are used by BAG to properly create dummy transistors in the layout, and anything else can be removed if not used in the schematic generator.
+This template holds only a human-readable description of the connections. The schematic will be copied over with actual values filled in by BAG afterward. One thing to note is the presence of seemingly useless transistors, like in the bottom right. These transistors are used by BAG to properly create dummy transistors in the layout, and anything else can be removed if not used in the schematic generator. Additionally, the transistor in the bottom left used for adding stabilization capacitance can also be removed if desired. Example layouts below will not have this transistor.
 
-Using the schematic template, the user then decides how many rows of transistors will be in the layout, and assigns a number of transistors to each row. There are a number of helper functions to generate a data structure containing information about which row the transistor is in, the drain/source metal directions, number of fingers, etc. which is called the ``initialization step". An example of how one might set up the rows and initialization for the amplifier in figure \ref{fig:sch_templ} is shown in listing \ref{lst:rows_assign} and listing \ref{lst:tx_init}. Note that these code blocks are only portions of the full layout generator and there are, in general, a small number of extra lines required. This section highlights only the most important portions of a generator.
+Using the schematic template, the user then decides how many rows of transistors will be in the layout, and assigns a number of transistors to each row. There are a number of helper functions to generate a data structure containing information about which row the transistor is in, the drain/source metal directions, number of fingers, etc. which is called the ``initialization step". An example of how one might set up the rows and initialization for the amplifier in Figure \ref{fig:sch_templ} is shown in Listing \ref{lst:rows_assign} and Listing \ref{lst:tx_init}. Note that these code blocks are only portions of the full layout generator and there are, in general, a small number of extra lines required. This section highlights only the most important portions of a generator.
 \begin{lstlisting}[language=Python, caption=Creating rows for transistors, label={lst:rows_assign}, float]
         # Rows are ordered from bottom to top
         # To use TrackManager, an ordered list of wiring types and their locations must be provided.
@@ -130,9 +130,9 @@ Using the schematic template, the user then decides how many rows of transistors
         layout_helper.assign_tx_column(tx=top_right, offset=col_stack_right, 
            fg_col=fg_stack, align=0)
 \end{lstlisting}
-After initializing all transistors, the user then must specify their locations in the layout by creating fictitious columns that stacks of transistors will be placed in. Based on the number of fingers each transistor has, technology required spacing and any other spacing (to route dummies, etc.) the user can compute columns based on a number of fingers, and assign the transistors like in listing \ref{lst:col_assign}.
+After initializing all transistors, the user then must specify their locations in the layout by creating fictitious columns that stacks of transistors will be placed in. Based on the number of fingers each transistor has, technology required spacing and any other spacing (to route dummies, etc.) the user can compute columns based on a number of fingers, and assign the transistors like in Listing \ref{lst:col_assign}.
 
-The final transistor placement step is to set the drain and source orientations. A transistor's source can be routed up or down which affects where the gate placements are made, and the first diffusion region per transistor can be either source or drain to make alignment simpler. There is also a helper function to automatically compute based on number of fingers which region should be the source or drain based on another transistor the user wishes to align to. This is shown in listing \ref{lst:sd_align}.
+The final transistor placement step is to set the drain and source orientations. A transistor's source can be routed up or down which affects where the gate placements are made, and the first diffusion region per transistor can be either source or drain to make alignment simpler. There is also a helper function to automatically compute based on number of fingers which region should be the source or drain based on another transistor the user wishes to align to. This is shown in Listing \ref{lst:sd_align}.
 \begin{lstlisting}[language=Python, caption=Determining transistor drain/source configurations, label={lst:sd_align}, float]
 	      ################################################################################
         # 4:  Assign the transistor directions (s/d up vs down)
@@ -168,7 +168,7 @@ The final transistor placement step is to set the drain and source orientations.
              source_tx=in_right, seff_dir=2)
 \end{lstlisting}
 \clearpage
-Finally, the difficult setup is complete, and the user can call the function \texttt{self.draw\_base()} with the information about rows, transistors, etc. set up in the previous steps. BAG will then draw the all of the required polygons for the metal connections to the MOS devices and everything else. An example base layout with no wiring done of the schematic in figure \ref{fig:sch_templ} is shown in figure \ref{fig:base_layout_metal}.
+Finally, the difficult setup is complete, and the user can call the function \texttt{self.draw\_base()} with the information about rows, transistors, etc. set up in the previous steps. BAG will then draw the all of the required polygons for the metal connections to the MOS devices and everything else. An example base layout with no wiring done of the schematic in Figure \ref{fig:sch_templ} is shown in Figure \ref{fig:base_layout_metal}.
 \begin{figure}[h]
 \centering
 \begin{subfigure}{.4\linewidth}
@@ -207,14 +207,14 @@ After drawing the base layout, users can then specify how to connect wires and p
 \label{fig:base_with_wires}
 \end{figure}
 
-Lastly, the user finalizes connections and adds pins to wires. In the final step, BAG will draw dummy transistors and create straps for the power supplies, automatically routing the dummies' connections to the supply, like in figure \ref{fig:finished_layout}.
+Lastly, the user finalizes connections and adds pins to wires. In the final step, BAG will draw dummy transistors and create straps for the power supplies, automatically routing the dummies' connections to the supply, like in Figure \ref{fig:finished_layout}.
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.6\textwidth]{full_layout}
 \caption{Finished Layout}
 \label{fig:finished_layout}
 \end{figure}
-With a finished layout generator, the user can now arbitrarily change their transistor specifications which will be reflected automatically in the wiring and sizing. Figure \ref{fig:width_changes} shows the same generator with various width and number of finger choices.
+With a finished layout generator, the user can now arbitrarily change their transistor specifications which will be reflected automatically in the wiring and sizing. Figure \ref{fig:width_changes} shows the same generator with various width and number of finger choices. An important note is that the user can do all this without knowing any of the myriad of the layout design rules since BAG handles these complexities internally and abstracts them away from the user.
 \begin{figure}[h]
 \centering
 \begin{subfigure}{.4\linewidth}
@@ -239,7 +239,7 @@ With a finished layout generator, the user can now arbitrarily change their tran
 \label{fig:width_changes}
 \end{figure}
 \clearpage
-BAG also offers hierarchy in layout using \texttt{TemplateBase} \cite{chang_bag2:_2018}. When a library of smaller cells are created, the user can then ``stamp" these cells into a larger unit like in listing \ref{lst:master_creation} and connect them together to form more complex systems. An example of a circuit containing a differential TIA and a CTLE is shown in figure \ref{fig:tia_ctle}.
+BAG also offers hierarchy in layout using \texttt{TemplateBase} \cite{chang_bag2:_2018}. When a library of smaller cells are created, the user can then ``stamp" these cells into a larger unit and connect them together to form more complex systems. Listing \ref{lst:master_creation} demonstrates the code to insert a double tail sense amplifier into a circuit. The user first creates a template, then computes a location where the circuit should be placed using helper functions to guarentee everything is aligned to the grid. Lastly, with the computed coordinates, the user can instantiate the circuit into the layout. An example of a circuit containing a differential transimpedance amplifier (TIA) and continuous-time linear equalizer (CTLE) is shown in Figure \ref{fig:tia_ctle}.
 \begin{lstlisting}[language=Python, caption=Adding and placing templates to a layout, label={lst:master_creation}, float]
 # Define the instance masters
 	...
@@ -268,7 +268,8 @@ BAG also offers hierarchy in layout using \texttt{TemplateBase} \cite{chang_bag2
 \caption{Differential TIA and CTLE}
 \label{fig:tia_ctle}
 \end{figure}
-The benefit of codifying the layout procedure is that configuration can be automatically included. For example, should a designer want variable resistors in their circuit, they may opt for a resistor DAC. Resistor DACs are often an arbitrary number of arrayed unit resistors with digitally controlled switches. Using \texttt{TemplateBase}, we can place any amount of template layouts which allows for a single generator with a large degree of freedom. The user can choose how many bits, what type of switch to use (NMOS, PMOS, passgate), and even whether or not to include local inversion for the passgate. An example of multiple resistor DAC layouts are shown in figure \ref{fig:dac} and a small portion of the configuration file in \ref{lst:res_dac_params}.
+
+The benefit of codifying the layout procedure is that configuration can be automatically included. For example, should a designer want variable resistors in their circuit, they may opt for a resistor DAC. Resistor DACs are often an arbitrary number of arrayed unit resistors with digitally controlled switches. One method of implementing such a resistor DAC is a set of series resistors each with a parallel switch that can short out or connect any of the series resistors. Using \texttt{TemplateBase}, we can place any amount of template layouts which allows for a single generator with a large degree of freedom to create such a circuit. The user can choose how many bits, what type of switch to use (NMOS, PMOS, passgate), and even whether or not to include local inversion for the passgate. An example of multiple resistor DAC layouts of this style are shown in Figure \ref{fig:dac} and a small portion of the configuration file in Listing \ref{lst:res_dac_params}.
 \begin{lstlisting}[language=Python, caption=Resistor DAC params sample, label={lst:res_dac_params}, float]
 params:
   output_bits_dir: 'left' #where to drag the control bits to
@@ -337,7 +338,7 @@ res_params:
 \section{Schematic Generators}
 Schematic generators control the process of copying the template schematic mentioned previously and assigning values to the components based on the inputted spec file \cite{chang_bag2:_2018}. These generators have the capability of arraying and deleting instances, removing, adding or renaming pins and other simple operations.
 
-Generally the user simply inputs commands to pass the component values into the design; but for circuits such as the resistor DAC in the previous section, the user can automatically array and resize components based on the layout like shown in figure \ref{fig:resdac_sch}. Portions of the code that accomplishes this is shown in listing \ref{lst:res_dac_sch_code}.
+Generally the user simply inputs commands to pass the component values into the design; but for circuits such as the resistor DAC in the previous section, the user can automatically array and resize components based on the layout like shown in Figure \ref{fig:resdac_sch}. Portions of the code that accomplishes this is shown in Listing \ref{lst:res_dac_sch_code}.
 \begin{lstlisting}[language=Python, caption=Resistor DAC schematic generator, label={lst:res_dac_sch_code}, float]
 # Some pins are not needed depending on the type of switch used.
 if switch_type == 'nmos':
@@ -391,9 +392,9 @@ for ind, inst in enumerate(self.instances['X_RES0']):
 \end{figure}
 \clearpage
 \section{Design Manager and Test Benches}
-As shown in figure \ref{fig:bag_top_level}, design manager is a higher level entity to that of the layout and schematic generators \cite{chang_bag2:_2018}. Design managers contain within them multiple test bench managers that each have their own corresponding measurement manager. In the specifications file, the user decides which tests to run and design manager will generate an instance and pass it through the chosen simulations. This is the method used to test the circuits described in Chapter 4. 
+As shown in Figure \ref{fig:bag_top_level}, design manager is a higher level entity to that of the layout and schematic generators \cite{chang_bag2:_2018}. Design managers contain within them multiple test bench managers that each have their own corresponding measurement manager. In the specifications file, the user decides which tests to run and design manager will generate an instance and pass it through the chosen simulations. This is the method used to test the circuits described in Chapter 4. 
 
-Tests are made by the user in a similar method to schematic generators. The user specifies a test bench setup with a generic DUT block and adds input sources and pins. Within a specifications file, the user describes how to wrap the inputs of the DUT to the generic block, as well as what outputs to save. These outputs are sent to the measurement manager where the user can, for example, compute 3dB frequencies, DC gain, etc. and save the results if desired. Multiple test benches can be run in one instance. A portion of an example parameters file for testbench management is shown in listing \ref{lst:tb_manager_yaml}.
+Tests are made by the user in a similar method to schematic generators. The user specifies a test bench setup with a generic DUT block and adds input sources and pins. Within a specifications file, the user describes how to wrap the inputs of the DUT to the generic block, as well as what outputs to save. These outputs are sent to the measurement manager where the user can, for example, compute 3dB frequencies, DC gain, etc. and save the results if desired. Multiple test benches can be run in one instance. A portion of an example parameters file for testbench management is shown in Listing \ref{lst:tb_manager_yaml}.
 \begin{lstlisting}[language=Python, caption=Test bench parameters, label={lst:tb_manager_yaml}, float]
 #Specifying how the ports of the device map to the generic DUT template
 dut_wrappers:
