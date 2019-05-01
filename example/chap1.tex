@@ -3,17 +3,17 @@
 If you know anyone who fits into the category of analog, RF or mixed signal designers, you may already be familiar with the disheartened, defeated look they often display. Is it that IC design attracts people of this nature? Or is it that IC design slowly gnaws at the existence of engineers until they are but a shell of their former selves? For this report, we will assume the latter. We will also assume this is due to standard practices more than any deep-rooted truths about IC design or people in general.
 
 \section{Modern Mixed Signal IC Flow and Concerns}
-IC design is slow. The fabrication process for an IC is very complex, and for complicated chips the upfront cost can be immense \cite{elder_real_nodate}. Mistakes are costly both monetarily and time-wise, ranging from hundreds of thousands of dollars and months to millions of dollars for simple edits to a circuit. Furthermore, a company selling chips for use in other companies' products are liable for their chip's performance. Should their component be the reason for a product's failure, that company may then be responsible for reimbursing the cost of the product. For a \$1000 cell phone with a million units shipped per year, a 1\% chip failure rate can lead to costs in the tens of millions. For a company designing ICs then, it is crucial to get a high yield of functioning chips on the first try to minimize costs.
+IC design is slow. The fabrication process for an IC is very complex, and for complex chips the upfront cost can be immense \cite{elder_real_nodate}. Mistakes are costly both monetarily and time-wise, ranging from hundreds of thousands of dollars and months to millions of dollars for simple edits to a circuit. Furthermore, a company selling chips for use in other companies' products are liable for their chip's performance. Should their component be the reason for a product's failure, that company may then be responsible for reimbursing the cost of the product. For a \$1000 cell phone with 100 million units shipped per year, a 1\% chip failure rate can lead to costs in the billions. For a company designing ICs then, it is crucial to get a high yield of functioning chips on the first try to minimize costs.
 
 Since a chip cannot be tested until after it is manufactured, IC designers tend to simulate the worst possible scenarios. Semiconductors behave quite differently under varying temperatures and circuit conditions may not be stable. Supply voltages may vary, manufacturing can create component offset that negatively impacts the circuit, static discharge events can occur and in modern processes, transistors age with time and exposure to bias voltages .Due to this, most companies will only tape out a chip when they are fully confident it will function properly under all use cases and over guareteed lifetime. 
 
 Ignoring the design procedure and assuming an architecture and component parameters are already chosen, the testing procedure is generally as follows:
 \begin{itemize}
-\item[1.] Simulate the chosen design across all specs to ensure proper behavior
-\item[2.] Simulate again, but at extreme temperatures and supply changes
-\item[3.] Simulate again, but including random process variation
-\item[4.] Draw the layout and extract the parasitics
-\item[5.] Perform 1. through 3. on the extracted layout
+\item[1.] Simulate the chosen design across all specs to ensure proper behavior.
+\item[2.] Simulate again, but at extreme temperatures and supply changes.
+\item[3.] Simulate again, but including random process variation.
+\item[4.] Draw the layout and extract the parasitics.
+\item[5.] Perform 1. through 3. on the extracted layout.
 \end{itemize}
 
 % cite with \cite{name}

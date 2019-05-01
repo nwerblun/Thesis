@@ -188,7 +188,7 @@ Finally, the difficult setup is complete, and the user can call the function \te
 \end{figure}
 \clearpage
 After drawing the base layout, users can then specify how to connect wires and ports by specifying a metal layer, a wire width and a track. Tracks are an invisible grid that spans the design space used by BAG to place wires properly. Listing \ref{lst:wiring} shows an example command of how to connect elements. Note that this code makes no reference to anything specific nor does it ``hardcode" any parameters. Everything is generic to the specified parameters. Figure \ref{fig:base_with_wires} shows the connections made by BAG.
-\begin{lstlisting}[language=Python, caption=Drawing wire connections, label={lst:wiring}, float]
+\begin{lstlisting}[language=Python, caption=Drawing wire connections., label={lst:wiring}, float]
 	      #Connect up bias gates + drain
         warr_bias_in = self.connect_to_tracks(
             [tail_l['g'], tail_r['g'], bias['d'], bias['g']],
@@ -203,7 +203,7 @@ After drawing the base layout, users can then specify how to connect wires and p
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.6\textwidth]{base_metal_conns}
-\caption{Transistor Wiring}
+\caption{Transistor wiring}
 \label{fig:base_with_wires}
 \end{figure}
 
@@ -211,7 +211,7 @@ Lastly, the user finalizes connections and adds pins to wires. In the final step
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.6\textwidth]{full_layout}
-\caption{Finished Layout}
+\caption{Finished layout (only metals shown)}
 \label{fig:finished_layout}
 \end{figure}
 With a finished layout generator, the user can now arbitrarily change their transistor specifications which will be reflected automatically in the wiring and sizing. Figure \ref{fig:width_changes} shows the same generator with various width and number of finger choices. An important note is that the user can do all this without knowing any of the myriad of the layout design rules since BAG handles these complexities internally and abstracts them away from the user.

@@ -132,7 +132,7 @@ assuming that $C_{pd}$ is the photodiode capacitance plus any TIA input and wiri
 \draw (7, 2.5) to[short, -o] (8, 2.5) node[label={[font=\footnotesize]0:$v_{out}$}] {};
 \draw (7, 0) to[short] (0, 0);
 \end{circuitikz}
-\caption{TIA Small Signal Model}
+\caption{TIA low frequency small signal model}
 \label{fig:PLEASE}
 \end{figure}
 From the small signal model of one half of the circuit (shown in Figure \ref{fig:PLEASE}, ignoring $C_{pd}$) we can derive the gain. KCL at the output node gives
@@ -353,7 +353,7 @@ The comparator is implemented as a double tail sense amplifier.
 \draw (p_switch_right.gate) node[label={[font=\footnotesize]0:$\overline{CLK}$}] {};
 \end{circuitikz}
 \label{Double Tail Schematic}
-\caption{Double Tail Schematic}
+\caption{Double Tail Comparator Schematic}
 \end{figure}
 \clearpage
 The DTSA consists of a clocked differential pair that feeds into cross-coupled inverters. Much like the classic StrongArm sense-amp \cite{razavi_strongarm_2015}, the DTSA first precharges the $D_{in}$ and $D_{ip}$ nodes up to $V_{DD}$. After $CLK$ goes high, the input pairs activate and begin to drain charge from the parasitic capacitance at nodes $D_{in}$ and $D_{ip}$. Depending on which input is larger, one side will discharge faster which will turn off one of the switches connected to those nodes faster than the other. This sets the value in the cross-coupled inverters which is then reinforced through positive feedback. 
@@ -377,7 +377,7 @@ As a test, we determine what the approximate noise tolerance of the DTSA is. We 
 \caption{DTSA Noise}
 \label{fig:dtsa_noise}
 \end{figure}
-With a differential input of 1mV, only one in 100 inputs failed. This implies that $\pm$0.5mV input is approximately $3\sigma_n$. Although this includes both static overdrive and noise contribution, a previously run automated overdrive test determined that the static overdrive needed is must smaller than this input. This means that we can assume the majority of the input is the effect of noise. Thus, we should budget about $2\times 9\sigma_n$, or $\pm$3mV of the eye opening to noise tolerance for the DTSA for a BER of $10^{-12}$. This, of course, ignores process variation. Process variation introduces an offset that affects the current in each branch. From a Monte Carlo simulation, one can find the average offset which can then additionally be added to the eye opening budget. There are also topologies that can correct for offset, which would not completely eliminate the issue, but would certainly reduce it.
+With a differential input of 1mV, only one in 100 inputs failed. This implies that $\pm$0.5mV input is approximately $3\sigma_n$. Although this includes both static overdrive and noise contribution, a previously run automated overdrive test determined that the static overdrive needed is much smaller than this input. This means that we can assume the majority of the input is the effect of noise. Thus, we should budget about $2\times 9\sigma_n$, or $\pm$3mV of the eye opening to noise tolerance for the DTSA for a BER of $10^{-12}$. This, of course, ignores process variation. Process variation introduces an offset that affects the current in each branch. From a Monte Carlo simulation, one can find the average offset which can then additionally be added to the eye opening budget. There are also topologies that can correct for offset, which would not completely eliminate the issue, but would certainly reduce it.
 \clearpage
 \section{Design Verification}
 There were four simulations done to verify the behavior of the entire receiver. Firstly, a simple AC simulation of the front-end chain up to the samplers in order to see if the circuit provides enough gain. This is shown in Figure \ref{fig:afe_ac}
